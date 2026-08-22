@@ -1,7 +1,7 @@
 # 50 States or Less
 
 A static archive of a 2011–2012 road trip around the US in a restored 1977 GMC
-motorhome. 53 articles, 859 photos, 283 places, 27 states, 19,000 miles.
+motorhome. 53 articles, 859 photos, 283 places, 24 states, 16,000 recorded miles.
 
 The content is closed — nothing new has been published since June 2012 and nothing
 will be. This site exists to keep the record readable.
@@ -9,8 +9,8 @@ will be. This site exists to keep the record readable.
 ## Status
 
 Migration in progress. Replaces a CakePHP 1.3 app that lived at
-`~/Sites/cake_13_sites/50states` (repo: `paul-cloutier/50states`). **That repo is
-frozen** — the old site still runs and should keep running until this one is live.
+`~/Sites/cake_13_sites/50states` (repo: `paul-cloutier/50states_original`). **That repo
+is frozen** — the old site still runs and should keep running until this one is live.
 
 ## Stack
 
@@ -55,21 +55,49 @@ only get harder. Don't remove it.
 
 ## Migration phases
 
-1. ~~Secure and freeze the old site~~ — *outstanding, see below*
-2. Export and normalize content → `data/export/`
+1. ~~Secure and freeze the old site~~ — done (`50states_original` @ `f905bb2`)
+2. ~~Export and normalize content~~ — done, see below
 3. Mirror photos off S3 → Supabase Storage
 4. Static site to parity, no map
 5. Port the map
 6. Cut over with redirects
 
-### Outstanding on the old repo before it goes public again
+## Running the export
 
-Two unauthenticated holes found during the survey, neither fixed yet:
+Needs MySQL running (MAMP is fine) and Node 20+. No npm dependencies.
 
-- `/users/view/1` renders the SHA1 password hash and email to anonymous visitors
-  (leftover baked scaffold at `views/users/view.ctp`)
-- `PlacesController` has no auth guard on `add` / `edit` / `delete`, and its `delete`
-  is the only one on the site not commented out — and fires on a GET
+```bash
+npm run export          # content + route -> data/export/
+npm run verify          # diff the export against the still-running old site
+```
+
+The export imports `data/source/50_States.sql` into a throwaway database, reads
+from that, and drops it. It never touches the old app or its database, and every
+run re-validates that the committed dump still imports.
+
+`npm run verify` needs the old CakePHP site running:
+
+```bash
+cd ~/Sites/cake_13_sites/50states/html && \
+  /Applications/MAMP/bin/php/php7.4.33/bin/php -S localhost:8765 router.php
+```
+
+It fingerprints every exported string (entities decoded, markup stripped, case and
+punctuation folded) and asserts it appears in the live page. Currently: **53
+articles + 22 sampled photos, zero mismatches.** Run it before the old app is
+switched off — after that, this check is gone forever.
+
+### What the export produces
+
+| File | Contents |
+| --- | --- |
+| `articles.json` | 53 articles, body as Markdown blocks, precomputed prev/next |
+| `photos.json` | 859 photos with denormalized place/city/state, tags, related ids |
+| `places.json` | 283 places, numeric coords, recomputed photo/article counts |
+| `tags.json` | 57 tags with slugs and photo ids |
+| `authors.json` | 2 authors — no credentials |
+| `route.geojson` | 141 named driving legs with day numbers and descriptions |
+| `manifest.json` | counts, trip span, frozen historical view totals |
 
 ## Gotchas carried over
 
@@ -79,16 +107,24 @@ Two unauthenticated holes found during the survey, neither fixed yet:
   `php -S` serves over HTTP. Use `https://maps.googleapis.com/maps/api/js?key=…`.
   Always verify the map on an HTTPS preview URL, never localhost.
 - **All 858 photo URLs in the dump are `http://`** and need rewriting on export.
-- **Text encoding is in three broken states at once**: mixed utf8/latin1 tables read
-  over a latin1 connection, HTML entities stored as literal text (`&#8217;`), and real
-  mojibake from an older bad round-trip (`â€"` where an en-dash belongs). The export
-  has to repair all three, and should be diffed against the old site's rendered
-  output while that site still runs.
+- **Never import the dump with the default client charset.** The dump carries no
+  `SET NAMES`, so MySQL falls back to the client default — `latin1` on MAMP — and
+  MySQL's "latin1" is really Windows-1252, where byte `0x83` maps to `ƒ`. Importing
+  that way silently adds an encoding layer, turning already-double-encoded text into
+  triple-encoded text that no repair can distinguish from real content. Import with
+  `--default-character-set=utf8mb3`, which reproduces the live database byte for
+  byte. `scripts/lib/db.mjs` does this; the trap is documented there.
 - **Article bodies aren't plain prose.** The old `AppHelper::formatBlurb()` split
   blurbs on blank lines, wrapped them in `<p>`, and passed `<blockquote>` through
-  untouched — that's how the pull-quotes work. There are inline `<a href>` links too.
-- **`state` values are inconsistently cased** (`MT` vs `Mt`), which is why the database
-  says 27 states and the old homepage says 28.
+  untouched — that's how the pull-quotes work. Ported in `blurbToMarkdown()`.
+- **Some links were authored with typographic quotes** (`href=”http://…”`). Since
+  entities are decoded before HTML conversion, `&#8221;` is already `”` by then, so
+  the link regex must accept curly quotes or the `<a>` tags survive into the output.
+- **`places.state` was dirtier than just casing**: `OREGON` alongside `OR`,
+  `WASHINGTON` alongside `WA`, and `PENSACOLA` — a city — on Fort Pickens, which is
+  in Florida. The real count is **24 states**, not the 27 a naive `DISTINCT` gives or
+  the 28 hardcoded on the old homepage. `normalizeState()` resolves these and
+  reports anything it can't, rather than passing it through.
 - **Museo font license is unverified.** Check it before shipping `reference/type/`.
 
 ## Route data
@@ -98,9 +134,17 @@ Two unauthenticated holes found during the survey, neither fixed yet:
 138 distinct driving days across a 213-day span, 31,784 points.
 
 The old site parsed all of it client-side on every page load and drew 141 identical
-blue lines, discarding every name and description. Simplified to ~110 m tolerance the
-whole route is 82 KB gzipped and visually identical at trip zoom, so it should be
-baked to GeoJSON at build time instead.
+blue lines, discarding every name and description. `export-route.mjs` bakes it to
+GeoJSON instead: 13,802 of 31,784 points at ~110 m tolerance, **98 KB gzipped**,
+with day numbers, descriptions and per-leg mileage retained.
+
+**Known gap — the route ends before the trip does.** The last leg is day 213 =
+1 Aug 2011, but the trip ran to 22 June 2012. 26 of 283 places fall after the route
+ends (19 CA, 4 OR, 3 TN — the drive home down the Oregon coast). The route's
+measured length is 16,046 miles against the 19,651 the old homepage claimed, and
+that gap is the missing homeward leg. The old site drew this same file, so this is
+pre-existing, not a regression. Options if we want to close it: leave as-is
+(parity), or synthesize the final leg from place coordinates and mark it approximate.
 
 The day names and descriptions are worth surfacing eventually — Google's polylines
 take hover listeners fine. Parked, not part of the migration.

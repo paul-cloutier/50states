@@ -1,0 +1,25 @@
+{
+  "source": "data/source/fullRoute.kml",
+  "tolerance": 0.001,
+  "legs": 141,
+  "points": {
+    "original": 31784,
+    "simplified": 13802
+  },
+  "bytes": {
+    "geojson": 316422,
+    "gzipped": 99846
+  },
+  "days": {
+    "first": 1,
+    "last": 213,
+    "distinct": 138
+  },
+  "miles": 16046,
+  "bbox": [
+    -124.7259,
+    28.3045,
+    -79.8642,
+    48.8568
+  ]
+}

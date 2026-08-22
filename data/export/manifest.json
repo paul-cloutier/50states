@@ -1,0 +1,52 @@
+{
+  "generatedFrom": {
+    "dump": "data/source/50_States.sql",
+    "sha256": "4fb9c201b1e13d37fdce9fdae2fe67f3f4bff7bb29751260e20210a402c6b270"
+  },
+  "counts": {
+    "articles": 53,
+    "articleBodyBlocks": 147,
+    "photos": 859,
+    "photosActive": 859,
+    "places": 283,
+    "placesWithCoords": 283,
+    "tags": 57,
+    "authors": 2
+  },
+  "trip": {
+    "firstVisit": "2011-01-01T00:00:00Z",
+    "lastVisit": "2012-06-22T00:00:00Z",
+    "statesVisited": 24,
+    "states": [
+      "AZ",
+      "CA",
+      "FL",
+      "GA",
+      "IA",
+      "IL",
+      "IN",
+      "KS",
+      "KY",
+      "LA",
+      "MO",
+      "MS",
+      "MT",
+      "NE",
+      "NM",
+      "OK",
+      "OR",
+      "SC",
+      "SD",
+      "TN",
+      "TX",
+      "WA",
+      "WI",
+      "WY"
+    ]
+  },
+  "historicalViews": {
+    "articles": 14507,
+    "photos": 42954,
+    "places": 5074
+  }
+}

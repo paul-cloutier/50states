@@ -1,0 +1,16 @@
+{
+  "name": "fiftystates",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static archive of a 2011-2012 road trip around the US",
+  "scripts": {
+    "export": "npm run export:content && npm run export:route",
+    "export:content": "node scripts/export-content.mjs",
+    "export:route": "node scripts/export-route.mjs",
+    "verify": "node scripts/verify-against-live.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

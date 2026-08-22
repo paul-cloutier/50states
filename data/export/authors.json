@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "firstName": "Paul",
+    "lastName": "Cloutier",
+    "name": "Paul Cloutier",
+    "slug": "paul",
+    "avatar": "https://50statesorless.com/img/paul_avatar_small.jpg",
+    "bio": "Paul loves to drive and spends more time looking for the worlds largest X than he probably should. He's pretty excited about Kentucky bourbon tours and finally seeing New England.",
+    "created": "2011-03-11T20:37:00Z"
+  },
+  {
+    "id": 2,
+    "firstName": "Alana",
+    "lastName": "Cloutier",
+    "name": "Alana Cloutier",
+    "slug": "alana",
+    "avatar": "https://50statesorless.com/img/alana_avatar_small.jpg",
+    "bio": "Alana mostly spends her time taking pictures of squirrels and hiding the dog when we go places. She's pretty excited about seeing as many donut shops as possible.",
+    "created": "2011-03-11T20:38:13Z"
+  }
+]
