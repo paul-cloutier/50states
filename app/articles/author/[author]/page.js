@@ -7,7 +7,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const slug = (await params).author;
+  // await must not sit inside the find() callback - that arrow isn't async.
+  const { author: slug } = await params;
   const a = authors.find((x) => x.slug === slug);
   return { title: a ? `Articles by ${a.name}` : 'Articles' };
 }
@@ -16,13 +17,13 @@ export default async function ByAuthor({ params }) {
   const slug = (await params).author;
   const a = authors.find((x) => x.slug === slug);
   if (!a) notFound();
-  const list = articlesForAuthor(slug);
   return (
     <ArticleList
-      title={a.name}
-      blurb={a.bio}
-      list={list}
+      descriptor={`by ${a.firstName}`}
+      list={articlesForAuthor(slug)}
       active={{ kind: 'author', value: slug }}
+      sorterHref="/articles"
+      sorterLabel="view them all"
     />
   );
 }

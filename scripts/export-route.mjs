@@ -143,6 +143,10 @@ function main() {
   const fc = { type: 'FeatureCollection', features };
   const json = JSON.stringify(fc);
   writeFileSync(resolve(OUT_DIR, 'route.geojson'), json + '\n');
+  // Also drop it in public/ - the map fetches it as a static file rather than
+  // having 300 KB of GeoJSON bundled into the JS payload. Written from here so the
+  // two copies cannot drift.
+  writeFileSync(resolve(ROOT, 'public/route.geojson'), json + '\n');
 
   const days = features.map((f) => f.properties.day).filter(Boolean);
   const lons = features.flatMap((f) => f.geometry.coordinates.map((c) => c[0]));

@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  livePhotos, photoById, placeById, tags as allTags, formatDate, cityState, author,
+  livePhotos, photoById, placeById, tags as allTags, mapPlaces,
+  formatDate, cityState, author,
 } from '@/lib/content';
-import { Photo, PhotoCard, Pager, Inner } from '@/app/components';
+import TripMap from '@/app/TripMap';
+import { Photo, PhotoItem, Inner, NextPrev } from '@/app/components';
 
 export function generateStaticParams() {
   return livePhotos.map((p) => ({ id: String(p.id) }));
@@ -30,46 +32,67 @@ export default async function PhotoPage({ params }) {
   const prev = p.prevId ? photoById.get(p.prevId) : null;
   const next = p.nextId ? photoById.get(p.nextId) : null;
   const related = (p.relatedIds || []).map((id) => photoById.get(id)).filter(Boolean).slice(0, 8);
+  // 612x612 shots are the 2011 Instagram exports; the original matted them on black.
+  const isSquare = p.width && p.width === p.height;
 
   return (
-    <Inner>
-      <h1 className="pageTitle">{p.title || 'Untitled'}</h1>
-      <p className="byline">
-        {who ? `By ${who.name}` : null}
-        {p.visited ? ` · ${formatDate(p.visited)}` : ''}
-        {place ? <> · <Link href={`/places/${place.id}`}>{cityState(place)}</Link></> : null}
-      </p>
+    <>
+      <TripMap
+        variant="detail"
+        places={place ? mapPlaces([place]) : []}
+        fallback={place?.name}
+      />
+      <div className="main">
+        <Inner>
+          <div className="photo">
+            <h1>
+              {p.title || 'Untitled'}
+              {place ? (
+                <span className="where">
+                  <Link href={`/places/${place.id}`}>{cityState(place)}</Link>
+                </span>
+              ) : null}
+            </h1>
 
-      <figure>
-        <Photo photo={p} priority sizes="(max-width: 1024px) 100vw, 1024px" />
-        {p.caption ? <figcaption>{p.caption}</figcaption> : null}
-      </figure>
+            <div className={isSquare ? 'instagram' : 'photoFrame'}>
+              <Photo photo={p} priority sizes="(max-width: 1000px) 100vw, 985px" />
+            </div>
 
-      {p.tags?.length ? (
-        <ul className="tagList">
-          {p.tags.map((t) => {
-            const s = slugFor(t);
-            return (
-              <li key={t}>
-                {s ? <Link href={`/photos/tags/${s}`}>{t}</Link> : <span>{t}</span>}
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
+            <div className="photoInfo">
+              <div className="byLine">
+                {who ? <><strong>{who.name}</strong></> : null}
+                {p.visited ? formatDate(p.visited) : null}
+              </div>
+              <div className="caption">
+                {p.caption ? <p>{p.caption}</p> : null}
+                {p.tags?.length ? (
+                  <ul className="tags">
+                    {p.tags.map((t) => {
+                      const s = slugFor(t);
+                      return (
+                        <li key={t}>
+                          {s ? <Link href={`/photos/tags/${s}`}>{t}</Link> : <span>{t}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
+              </div>
+            </div>
 
-      {related.length ? (
-        <>
-          <h2 className="sectionHead">
-            More from {place ? place.name : 'this stop'}
-          </h2>
-          <ul className="grid photos">
-            {related.map((r) => <PhotoCard key={r.id} photo={r} />)}
-          </ul>
-        </>
-      ) : null}
+            {related.length ? (
+              <>
+                <h2 className="sectionHead">More from {place ? place.name : 'this stop'}</h2>
+                <div className="photoGrid">
+                  {related.map((r) => <PhotoItem key={r.id} photo={r} />)}
+                </div>
+              </>
+            ) : null}
 
-      <Pager prev={prev} next={next} base="/photos" labelOf={(x) => x.title || 'Untitled'} />
-    </Inner>
+            <NextPrev prev={prev} next={next} base="/photos" photoOf={(x) => x} />
+          </div>
+        </Inner>
+      </div>
+    </>
   );
 }

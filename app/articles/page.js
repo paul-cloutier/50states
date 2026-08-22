@@ -6,10 +6,11 @@ export const metadata = { title: 'Articles' };
 export default function Articles() {
   return (
     <ArticleList
-      title="Articles"
-      blurb={`${articlesNewestFirst.length} stories from the road, most recent stop first.`}
+      descriptor="by date visited"
       list={articlesNewestFirst}
       active={{ kind: 'trip' }}
+      sorterHref="/articles/date"
+      sorterLabel="view them in the order we put them on the site"
     />
   );
 }

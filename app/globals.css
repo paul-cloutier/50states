@@ -1,47 +1,53 @@
 /*
- * Ported from the 2011 stylesheet, keeping its identity and dropping its fixed
- * 995px layout. Original tokens preserved: Georgia body, Museo uppercase display,
- * #3c92ba accent (the same blue the route polyline is drawn in), #333 page ground
- * with white content panels.
+ * Faithful port of the 2011 stylesheet.
+ *
+ * The original was pinned to a 995px grid with float columns. Structure, colour and
+ * type are kept as they were; the only intentional change is that the fixed widths
+ * become max-widths and the float columns collapse below 900px, because the original
+ * shipped `viewport width=1024` and was unusable on a phone.
+ *
+ * Original values preserved deliberately, since they are easy to "improve" by
+ * mistake: .main is #eee (not white), #homeStats is a #ccc bar with white italic
+ * figures (not a dark band), the home map is 500px and detail maps are 150px,
+ * article body text sits in a 660px right column with captions in a 250px left
+ * column, and every photo carries a 5px white border that turns #7bc5e8 on hover.
  */
 
 @font-face {
   font-family: 'Museo';
   src: url('/type/museo/museo300-regular-webfont.woff') format('woff');
-  font-weight: 300;
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Museo';
+  font-family: 'Museo500';
   src: url('/type/museo/museo500-regular-webfont.woff') format('woff');
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Museo';
-  src: url('/type/museo/museo700-regular-webfont.woff') format('woff');
-  font-weight: 700;
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
 :root {
   --accent: #3c92ba;
-  --accent-light: #7bc5e8;
+  --accent-hover: #7bc5e8;
+  --pink: #ff0085;
   --ink: #333;
-  --ink-soft: #666;
-  --ink-faint: #999;
+  --mid: #666;
+  --grey: #999;
   --rule: #ccc;
-  --rule-soft: #e1e1e1;
-  --panel: #fff;
-  --ground: #333;
   --wash: #eee;
+  --white: #fff;
 
-  --display: 'Museo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --museo: 'Museo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --museo500: 'Museo500', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --body: Georgia, Times, serif;
   --ui: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-  --measure: 34rem;
-  --gutter: clamp(1rem, 4vw, 2.25rem);
+  /* the original 995px grid and its two columns */
+  --grid: 995px;
+  --col-wide: 660px;
+  --col-narrow: 250px;
 }
 
 * { box-sizing: border-box; }
@@ -50,341 +56,533 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--ground);
-  color: var(--ink);
   font-family: var(--body);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 14px;
+  background-color: var(--ink);
+  color: var(--ink);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-.inner {
-  width: 100%;
-  max-width: 62rem;
-  margin: 0 auto;
-  padding-inline: var(--gutter);
-}
+/* The original shipped a full Eric Meyer-style reset. These are the parts that
+   actually matter here - without the blockquote reset the UA's 40px side margins
+   shrink the 660px pull-quote column to 580px. */
+ul { margin: 0; padding: 0; }
+li { list-style: none; margin: 0; padding: 0; }
+blockquote, figure { margin: 0; padding: 0; }
+h1, h2, h3, h4, p { margin: 0; }
+img { max-width: 100%; height: auto; }
 
 a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 2px;
+a:hover { text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.inner {
+  width: 100%;
+  max-width: var(--grid);
+  margin: 0 auto;
+  position: relative;
 }
 
-img { max-width: 100%; height: auto; display: block; }
+/* The original had no gutter - it just centred a 995px box. Only add one once the
+   viewport is narrower than the grid, so desktop stays pixel-faithful. */
+@media (max-width: 1019px) {
+  .inner { padding-inline: 12px; }
+}
 
 /* ---------------------------------------------------------------- header */
 
 .header {
-  background: var(--ground);
-  border-bottom: 2px solid var(--accent);
-  font-family: var(--display);
+  border-bottom: var(--accent) solid 2px;
+  padding: 8px 0 5px 0;
+  font-family: var(--museo);
   text-transform: uppercase;
 }
 .header .inner {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  padding-block: 0.75rem 0.6rem;
+  gap: 4px 20px;
 }
-.header h1 {
-  margin: 0;
-  font-size: clamp(1.35rem, 4.5vw, 1.9rem);
-  font-weight: 500;
-  letter-spacing: 0.01em;
+.header h1 { margin: 0; font-size: 100%; font-weight: normal; }
+.header h1 a {
+  color: var(--white);
+  display: block;
+  font-size: 30px;
+  /* the "paul & alana's" script mark sits above the wordmark */
+  background: url(/img/paulandalana.png) top left no-repeat;
+  padding-top: 15px;
+  line-height: 1.05;
 }
-.header h1 a { color: var(--panel); }
-.header h1 a:hover { text-decoration: none; color: var(--accent-light); }
-.header nav ul {
-  display: flex;
-  gap: clamp(0.9rem, 3vw, 1.75rem);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
+.header h1 a:hover { color: var(--white); }
+.header nav ul { display: flex; gap: 20px; }
+.header nav a { color: var(--accent); font-size: 20px; }
+.header nav a:hover,
+.header nav a[aria-current='page'] { color: var(--white); }
+
+/* ---------------------------------------------------------------- map bands */
+
+.map,
+.mapDetail {
+  border-bottom: var(--grey) solid 1px;
+  background: var(--white) url(/img/bg_diag.gif) repeat;
+  position: relative;
 }
-.header nav a { color: var(--accent-light); }
+.map .mapCanvas { height: 500px; z-index: 9; }
+.mapDetail .mapCanvas { height: 150px; z-index: 9; }
+.mapLoading {
+  text-align: center;
+  color: var(--grey);
+  font-family: var(--ui);
+  font-size: 12px;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+}
+.mapLoading img { margin: 0 auto; }
+
+/* the original InfoBox chrome */
+.infoBoxStyle {
+  border: #1d5f75 solid 1px;
+  border-top-width: 0;
+  border-left-width: 0;
+  margin-bottom: 44px;
+  background: #3399bb;
+  padding: 10px;
+  color: var(--white);
+  font-family: var(--body);
+}
+.infoBoxStyle a {
+  color: #034363;
+  font-size: 16px;
+  text-shadow: 0 1px 0 #7cc6de;
+  font-family: var(--museo500);
+}
+.infoBoxStyle div { font-size: 12px; }
+
+/* ---------------------------------------------------------------- stats bar */
+
+#homeStats {
+  padding: 10px 0;
+  border-bottom: var(--grey) solid 1px;
+  background-color: var(--rule);
+  font-size: 18px;
+}
+#homeStats ul { display: flex; flex-wrap: wrap; gap: 6px 36px; }
+#homeStats span { font-style: italic; color: var(--white); }
 
 /* ---------------------------------------------------------------- main */
 
-.main { background: var(--panel); }
-.main > .inner { padding-block: clamp(1.5rem, 5vw, 2.75rem); }
+.main { background-color: var(--wash); padding: 20px 0; }
 
-h2, h3, h4 { font-family: var(--display); font-weight: 500; }
+/* ---------------------------------------------------------------- columns */
 
-.pageTitle {
-  font-family: var(--display);
-  font-weight: 700;
+.leftCol { width: 605px; float: left; padding: 0 10px 0 0; }
+.rightCol { width: 369px; float: right; padding: 0 0 0 10px; }
+.cols::after { content: ''; display: block; clear: both; }
+
+/* ---------------------------------------------------------------- article */
+
+.article { margin-top: 0; }
+.article h1 {
+  margin: 10px 0 5px;
+  font-family: var(--museo500);
+  color: var(--ink);
+  font-size: 48px;
+  line-height: 1.02;
   text-transform: uppercase;
-  font-size: clamp(1.75rem, 6vw, 2.6rem);
-  line-height: 1.08;
-  letter-spacing: 0.005em;
-  margin: 0 0 0.4rem;
+  font-weight: normal;
   text-wrap: balance;
 }
-.subTitle {
-  font-family: var(--body);
+.article .subTitle {
+  color: var(--accent);
+  font-size: 28px;
   font-style: italic;
-  color: var(--accent);
-  font-size: clamp(1rem, 2.6vw, 1.2rem);
-  margin: 0 0 1.5rem;
-  max-width: var(--measure);
+  margin-bottom: 15px;
+  line-height: 1.25;
 }
-.byline {
-  font-family: var(--ui);
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--ink-faint);
-  margin: 0 0 1.75rem;
-}
-.byline a { color: var(--ink-soft); }
-
-/* ---------------------------------------------------------------- prose */
-
-.prose { max-width: var(--measure); }
-.prose p { margin: 0 0 1.25rem; }
-.prose blockquote {
-  margin: 1.75rem 0;
-  padding: 0 0 0 1.1rem;
-  border-left: 3px solid var(--accent);
-  font-family: var(--display);
-  font-weight: 300;
-  font-size: clamp(1.15rem, 3vw, 1.45rem);
-  line-height: 1.35;
-  color: var(--ink);
-}
-.prose blockquote p { margin: 0; }
-.prose ul { margin: 0 0 1.25rem; padding-left: 1.2rem; }
-.prose li { margin-bottom: 0.4rem; }
-
-/* wide figures break out of the text measure */
-.articleBody { display: flex; flex-direction: column; gap: 0; }
-figure { margin: 2rem 0; }
-figure img { width: 100%; border: 1px solid var(--rule-soft); }
-figcaption {
-  font-family: var(--ui);
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  margin-top: 0.55rem;
-  max-width: var(--measure);
-}
-
-/* ---------------------------------------------------------------- grids */
-
-.grid {
-  display: grid;
-  gap: clamp(1rem, 3vw, 1.75rem);
-  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.grid.photos {
-  grid-template-columns: repeat(auto-fill, minmax(min(10rem, 45%), 1fr));
-  gap: clamp(0.5rem, 2vw, 1rem);
-}
-
-.card { display: flex; flex-direction: column; }
-.card a { color: inherit; }
-.card a:hover { text-decoration: none; }
-.card .thumb {
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  background: var(--wash);
-  border: 1px solid var(--rule-soft);
-}
-.card .thumb img { width: 100%; height: 100%; object-fit: cover; }
-.card h3 {
-  font-size: 1.05rem;
-  margin: 0.6rem 0 0.2rem;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-}
-.card a:hover h3 { color: var(--accent); }
-.card p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); }
-.card .meta {
-  font-family: var(--ui);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-faint);
-  margin-top: 0.35rem;
-}
-
-.grid.photos .card .thumb { aspect-ratio: 1; }
-
-/* ---------------------------------------------------------------- filters */
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.75rem;
-  align-items: baseline;
-  font-family: var(--ui);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 1.75rem;
-  padding: 0 0 1rem;
-  border-bottom: 1px solid var(--rule-soft);
-  list-style: none;
-}
-.filters .label { color: var(--ink-faint); }
-.filters a { color: var(--ink-soft); }
-.filters a:hover, .filters a[aria-current='page'] {
-  color: var(--accent);
-  text-decoration: none;
-}
-.filters a[aria-current='page'] { font-weight: bold; }
-
-/* ---------------------------------------------------------------- prev/next */
-
-.pager {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 3rem 0 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--rule-soft);
-  font-family: var(--ui);
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.pager a { display: flex; align-items: center; gap: 0.5rem; }
-.pager .next { margin-left: auto; text-align: right; }
-
-/* ---------------------------------------------------------------- map slot */
-
-.mapSlot {
-  background: var(--wash);
-  border-bottom: 1px solid var(--ink-faint);
-  min-height: clamp(12rem, 38vh, 26rem);
-  display: grid;
-  place-items: center;
-  font-family: var(--ui);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-faint);
-  text-align: center;
-  padding: 1rem;
-}
-
-/* ---------------------------------------------------------------- stats */
-
-.stats {
-  background: var(--ground);
-  color: var(--panel);
-  font-family: var(--display);
-  text-transform: uppercase;
-}
-.stats ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-  gap: 0.75rem 1.5rem;
-  list-style: none;
-  margin: 0;
-  padding-block: 1rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-}
-.stats li { color: var(--ink-faint); }
-.stats span {
+.article .leadImage { margin-bottom: 10px; }
+.article .leadImage img,
+.article figure img {
+  border: var(--white) solid 5px;
+  width: 100%;
   display: block;
-  color: var(--accent-light);
-  font-size: 1.5rem;
-  letter-spacing: 0;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
+.article a:hover img { border-color: var(--accent-hover); }
 
-/* ---------------------------------------------------------------- footer */
+/* body text in the wide right column, captions in the narrow left column */
+.article .postBody { margin: 20px 0; position: relative; }
+.article .postBody::after { content: ''; display: block; clear: both; }
+.article .prose { width: var(--col-wide); float: right; }
+.article .prose p { font-size: 18px; line-height: 24px; margin-bottom: 10px; }
+.article .prose blockquote {
+  font-size: 40px;
+  line-height: 48px;
+  margin-bottom: 20px;
+  color: var(--grey);
+  font-family: var(--body);
+}
+.article .prose blockquote p { font-size: inherit; line-height: inherit; margin: 0; }
+.article .prose ul { margin-bottom: 10px; padding-left: 20px; }
+.article .prose li { list-style: disc; }
 
-.footer {
-  background: var(--ground);
-  color: var(--ink-faint);
+.article .caption {
+  width: var(--col-narrow);
+  float: left;
   font-family: var(--ui);
-  font-size: 0.88rem;
-  padding-block: clamp(1.75rem, 5vw, 3rem);
+  color: var(--mid);
+  font-size: 11px;
+  line-height: 16px;
 }
-.footer .about { max-width: 44rem; margin: 0 0 2rem; }
-.footer .bios {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-  gap: 1.5rem 2.5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.article .caption strong {
+  color: var(--accent);
+  display: block;
+  font-size: 12px;
+  text-transform: capitalize;
 }
-.footer .bios li { display: flex; gap: 1rem; align-items: flex-start; }
-.footer .bios img { border-radius: 50%; flex: none; width: 72px; height: 72px; }
-.footer h4 {
-  color: var(--panel);
-  margin: 0 0 0.35rem;
-  font-family: var(--display);
+
+.article .endMark { clear: both; text-align: right; margin-top: 20px; }
+
+/* ---------------------------------------------------------------- article index */
+
+.articleIndex h1,
+.photoIndex h1 {
+  font-family: var(--museo500);
+  color: var(--ink);
+  font-size: 36px;
   text-transform: uppercase;
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
+  font-weight: normal;
+  margin: 0 0 10px;
 }
-.footer .bios p { margin: 0; line-height: 1.5; }
-.footer .archived {
-  margin: 2.5rem 0 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid #4a4a4a;
-  font-size: 0.78rem;
+.articleIndex h1 span,
+.photoIndex h1 span { color: var(--grey); }
+
+.articlePreview { position: relative; margin-bottom: 10px; }
+.articlePreview img {
+  border: var(--white) solid 5px;
+  display: block;
+  width: 100%;
+}
+.articlePreview a:hover img { border-color: var(--accent-hover); }
+.articleInfo {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  background: transparent url(/img/overlay.png);
+  padding: 20px;
+  color: var(--white);
+  text-shadow: 0 1px 0 #000;
+}
+.articleInfo h3 { font-family: var(--museo500); font-size: 24px; font-weight: normal; }
+.articleInfo h3 a { color: var(--accent); }
+.articleInfo h3 a:hover { color: var(--accent-hover); }
+.articleInfo span { font-family: var(--ui); font-size: 12px; display: block; margin: 2px 0 4px; }
+.articleInfo p { font-style: italic; font-size: 16px; }
+/* the first preview keeps the same 595px column width as the rest */
+.articlePreview a { display: block; }
+
+.articleItem {
+  margin-bottom: 10px;
+  padding: 10px 0;
+  border-bottom: var(--rule) dashed 1px;
+}
+.articleItem::after { content: ''; display: block; clear: both; }
+.articleItem img {
+  border: var(--white) solid 5px;
+  float: left;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.articleItem a:hover img { border-color: var(--accent-hover); }
+.articleItem h3 {
+  font-family: var(--museo500);
+  color: var(--ink);
+  font-size: 24px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--ink-soft);
+  font-weight: normal;
 }
+.articleItem a:hover h3 { color: var(--pink); }
+.articleItem span { color: var(--grey); font-family: var(--ui); font-size: 12px; }
+.articleItem p { font-style: italic; font-size: 18px; color: var(--mid); margin-top: 10px; }
+
+/* ---------------------------------------------------------------- sorter */
+
+#sorter {
+  font-family: var(--ui);
+  font-weight: bold;
+  margin: 5px 0 15px;
+  color: var(--grey);
+  text-transform: uppercase;
+  font-size: 90%;
+}
+#sorter a:hover { text-decoration: underline; }
+
+/* the "Slice and Dice It!" panel */
+.filter h3 { font-family: var(--museo500); font-size: 18px; color: var(--ink); font-weight: normal; }
+.filter p { margin-bottom: 15px; }
+.filter li { margin-bottom: 5px; }
+.filter label { display: inline-block; min-width: 90px; }
+.filter select {
+  border: var(--rule) solid 1px;
+  background-color: #e1e1e1;
+  padding: 2px;
+  font-family: var(--ui);
+  font-size: 13px;
+  max-width: 180px;
+}
+
+/* ---------------------------------------------------------------- photos */
+
+.photo { margin-top: 0; position: relative; }
+.photo h1 {
+  margin: 20px 0 5px;
+  font-family: var(--museo500);
+  color: var(--ink);
+  font-size: 36px;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.photo h1 .where {
+  background: url(/img/icon_location.png) center left no-repeat;
+  padding-left: 18px;
+  padding-top: 5px;
+  display: block;
+  font-family: var(--ui);
+  color: var(--grey);
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: none;
+}
+.photo .photoFrame img { border: var(--white) solid 5px; display: block; width: 100%; }
+.photo .instagram {
+  border: var(--white) solid 5px;
+  background-color: #000;
+  text-align: center;
+  padding: 20px 0;
+}
+.photo .instagram img { border: 0; margin: 0 auto; width: auto; }
+.photo .photoInfo {
+  background-color: var(--white);
+  margin-top: -3px;
+  position: relative;
+  min-height: 125px;
+  padding: 15px 15px 10px;
+}
+.photo .photoInfo::after { content: ''; display: block; clear: both; }
+.photo .photoInfo .caption { max-width: 640px; }
+.photo .photoInfo .caption p { color: var(--ink); font-size: 16px; line-height: 20px; }
+.photo .byLine {
+  text-align: right;
+  float: right;
+  width: 200px;
+  font-family: var(--ui);
+  color: var(--ink);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.photo .byLine strong { display: block; font-size: 14px; margin-top: 7px; }
+
+.tags { margin-top: 15px; }
+.tags li { display: inline; }
+.tags a {
+  background-color: var(--wash);
+  line-height: 13px;
+  font-family: var(--ui);
+  font-weight: bold;
+  padding: 4px 10px;
+  color: var(--grey);
+  font-size: 13px;
+  border-radius: 11px;
+  margin-right: 10px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.tags a:hover { text-decoration: underline; }
+
+.photoItem {
+  border: var(--rule) solid 1px;
+  width: 200px;
+  background: var(--white);
+  padding: 10px;
+  margin: 0 20px 20px 0;
+}
+.photoItem h3 {
+  font-family: var(--museo500);
+  font-size: 16px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+.photoItem img { border: var(--grey) solid 1px; width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.photoItem div { margin-top: 5px; font-family: var(--ui); font-size: 12px; color: var(--grey); }
+.photoGrid { display: flex; flex-wrap: wrap; }
+
+/* home photo strip */
+.photos { clear: both; margin-top: 40px; }
+.photos h3 { font-family: var(--museo500); font-size: 18px; color: var(--ink); font-weight: normal; }
+.photos ul { margin-top: 8px; }
+.photos li { display: inline-block; margin-right: 4px; }
+.photos li img { width: 100px; height: 100px; object-fit: cover; border: var(--white) solid 2px; display: block; }
+.photos li a:hover img { border-color: var(--accent-hover); }
+
+/* ---------------------------------------------------------------- next/prev */
+
+.nextPrev { margin: 50px 0 0; width: var(--col-wide); float: right; }
+.nextPrev::after { content: ''; display: block; clear: both; }
+.nextPrev h4 { font-family: var(--museo500); color: var(--ink); font-size: 120%; font-weight: normal; }
+.nextPrev .byLine { font-family: var(--ui); color: var(--grey); margin: 3px 0; font-weight: bold; font-size: 80%; }
+.nextPrev .left { float: left; width: 45%; }
+.nextPrev .right { float: right; width: 45%; text-align: right; }
+.nextPrev .thumbFloat img { border: var(--white) solid 3px; margin-top: 3px; width: 60px; height: 60px; object-fit: cover; }
+.nextPrev a:hover .thumbFloat img { border-color: var(--accent-hover); }
+.nextPrev .left .thumbFloat { float: left; margin-right: 10px; }
+.nextPrev .right .thumbFloat { float: right; margin-left: 10px; }
+
+/* ---------------------------------------------------------------- place page */
+
+#place h1 {
+  margin: 10px 0 5px;
+  font-family: var(--museo500);
+  color: var(--ink);
+  font-size: 36px;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+#place .leftCol { width: 369px; padding-right: 10px; }
+#place .rightCol { width: 605px; }
+.placeAddress {
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: bold;
+  color: var(--grey);
+  margin: 5px 0 5px 5px;
+}
+#place .description { margin: 10px 5px; color: var(--grey); }
+#place .url { margin: 10px 5px; }
+#place .noArticle {
+  text-align: center;
+  padding: 60px 20px;
+  border: var(--white) solid 5px;
+  font-style: italic;
+  color: var(--grey);
+  background: var(--white);
+}
+.showAll { text-align: right; margin-top: 3px; font-family: var(--ui); font-size: 12px; }
 
 /* ---------------------------------------------------------------- misc */
 
-.lead { max-width: var(--measure); color: var(--ink-soft); }
-
-.placeMeta {
-  font-family: var(--ui);
-  font-size: 0.9rem;
-  color: var(--ink-soft);
-  margin: 0 0 1.5rem;
-}
-.placeMeta a { color: var(--accent); }
-
-.sectionHead {
-  font-family: var(--display);
+h2.sectionHead {
+  font-family: var(--museo500);
+  font-size: 18px;
+  color: var(--ink);
+  font-weight: normal;
+  margin: 30px 0 10px;
   text-transform: uppercase;
-  font-size: 1.15rem;
-  letter-spacing: 0.03em;
-  margin: 2.75rem 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--rule-soft);
+}
+.recentPost h2 {
+  font-family: var(--museo);
+  color: var(--ink);
+  font-size: 22px;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  font-weight: normal;
+}
+.recentPost .subTitle { color: var(--accent); font-size: 18px; font-style: italic; margin-bottom: 8px; }
+.recentPost .postBody p { margin-bottom: 10px; line-height: 20px; }
+.recentPost a img { border: var(--white) solid 5px; margin-bottom: 10px; display: block; width: 100%; }
+.recentPost a:hover img { border-color: var(--accent-hover); }
+
+.paging { clear: both; padding-top: 20px; font-family: var(--museo500); font-size: 16px; }
+
+/* ---------------------------------------------------------------- footer */
+
+.footer { min-height: 150px; padding: 15px 0 20px 0; }
+.footer .about {
+  color: var(--grey);
+  text-align: center;
+  font-style: italic;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+.footer .bios { margin-bottom: 30px; }
+.footer .bios::after { content: ''; display: block; clear: both; }
+.footer .bios li { width: 45%; }
+.footer .bios li.left { float: left; }
+.footer .bios li.right { float: right; }
+.footer .bios img { border: var(--grey) solid 1px; width: 100px; height: 100px; }
+.footer .bios li.left img { float: left; }
+.footer .bios li.right img { float: right; }
+.footer .bios h4 { font-family: var(--museo500); font-size: 16px; color: var(--accent); font-weight: normal; }
+.footer .bios p { color: var(--grey); margin-bottom: 5px; line-height: 18px; }
+.footer .bios li.left p, .footer .bios li.left h4 { padding-left: 115px; }
+.footer .bios li.right p, .footer .bios li.right h4 { padding-right: 115px; }
+.footer .archived {
+  clear: both;
+  color: var(--mid);
+  text-align: center;
+  font-family: var(--ui);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 20px;
+  border-top: #4a4a4a solid 1px;
 }
 
-.tagList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.65rem;
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.5rem;
-  font-family: var(--ui);
-  font-size: 0.8rem;
+/* ================================================================ responsive
+ * The original had none of this - it shipped viewport width=1024 and a fixed
+ * 995px grid. Below 900px the float columns collapse to a single flow.
+ */
+
+@media (max-width: 980px) {
+  .article h1 { font-size: 38px; }
+  .article .subTitle { font-size: 22px; }
+  .article .prose blockquote { font-size: 30px; line-height: 36px; }
 }
-.tagList a {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  background: var(--wash);
-  border-radius: 2px;
-  color: var(--ink-soft);
+
+@media (max-width: 900px) {
+  .leftCol,
+  .rightCol,
+  #place .leftCol,
+  #place .rightCol,
+  .article .prose,
+  .article .caption,
+  .nextPrev {
+    width: 100%;
+    float: none;
+    padding: 0;
+    border-right: 0;
+  }
+  .article .caption { margin-bottom: 20px; }
+  .footer .bios li,
+  .footer .bios li.left,
+  .footer .bios li.right { width: 100%; float: none; margin-bottom: 20px; }
+  .photoItem { width: calc(50% - 10px); margin-right: 10px; }
+  .map .mapCanvas { height: 340px; }
 }
-.tagList a:hover { background: var(--accent); color: var(--panel); text-decoration: none; }
+
+@media (max-width: 620px) {
+  .article h1 { font-size: 30px; }
+  .article .subTitle { font-size: 19px; }
+  .article .prose p { font-size: 16px; line-height: 23px; }
+  .article .prose blockquote { font-size: 24px; line-height: 30px; }
+  .articleIndex h1, .photoIndex h1, .photo h1, #place h1 { font-size: 26px; }
+  .articleItem img { width: 80px; height: 80px; }
+  .header h1 a { font-size: 22px; }
+  .header nav a { font-size: 16px; }
+  #homeStats { font-size: 15px; }
+  #homeStats ul { gap: 4px 18px; }
+  .photos li img { width: 72px; height: 72px; }
+  .map .mapCanvas { height: 260px; }
+  .footer .bios li.left p, .footer .bios li.left h4,
+  .footer .bios li.right p, .footer .bios li.right h4 { padding: 0; }
+  .footer .bios li.left img, .footer .bios li.right img { float: none; margin-bottom: 8px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

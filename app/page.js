@@ -1,77 +1,95 @@
 import Link from 'next/link';
 import {
-  manifest, routeStats, articles, photosByIdDesc, articlePhotos,
-  articleById, formatDate, cityState, author,
+  manifest, routeStats, places, articleById, articlePhotos, photosByIdDesc,
+  mapPlaces, renderBody, formatDate, cityState, author, articlesNewestFirst,
 } from '@/lib/content';
-import { Photo, PhotoCard, MapSlot, Inner } from './components';
+import TripMap from './TripMap';
+import { Photo, Inner } from './components';
 
-// title.template in the root layout does not apply to a page in the SAME route
-// segment, so the homepage sets its title in full.
 export const metadata = { title: { absolute: '50 States Or Less: Welcome!' } };
 
-function Stats() {
-  const s = [
-    ['Miles Driven', routeStats.miles.toLocaleString()],
-    ['Days On The Road', routeStats.days.last],
-    ['Places', manifest.counts.places],
-    ['Photos', manifest.counts.photosActive],
-    ['States Visited', manifest.trip.statesVisited],
-  ];
-  return (
-    <section className="stats">
-      <div className="inner">
-        <ul>
-          {s.map(([label, value]) => (
-            <li key={label}>{label}<span>{value}</span></li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
+const STATS = [
+  ['Miles Driven', () => routeStats.miles.toLocaleString()],
+  ['Days On The Road', () => routeStats.days.last],
+  ['Places', () => manifest.counts.places],
+  ['Photos', () => manifest.counts.photosActive],
+  ['States Visited', () => manifest.trip.statesVisited],
+];
 
 export default function Home() {
-  // The old homepage picked a random article per request. A static build wants a
-  // stable choice, so this pins the trip's opening story.
-  const featured = articleById.get(1) || articles[0];
+  // The old homepage picked a random article per request; a static build pins one.
+  const featured = articleById.get(1) || articlesNewestFirst[0];
   const cover = articlePhotos(featured)[0];
   const who = author(featured.authorId);
+  const firstBlock = featured.body[0] ? renderBody([featured.body[0]]) : '';
 
   return (
     <>
-      <MapSlot />
-      <Stats />
-      <Inner>
-        <h2 className="sectionHead" style={{ marginTop: '2rem' }}>Start here</h2>
-        <article>
-          <h3 className="pageTitle">
-            <Link href={`/articles/${featured.id}`}>{featured.title}</Link>
-          </h3>
-          <p className="subTitle">{featured.abstract}</p>
-          {cover ? (
-            <figure>
-              <Photo photo={cover} priority sizes="(max-width: 900px) 100vw, 900px" />
-              {cover.caption ? <figcaption>{cover.caption}</figcaption> : null}
-            </figure>
-          ) : null}
-          <p className="byline">
-            {[cityState(featured), formatDate(featured.visited), who?.name]
-              .filter(Boolean).join(' · ')}
-            {' — '}
-            <Link href={`/articles/${featured.id}`}>Read it</Link>
-          </p>
-        </article>
+      <TripMap variant="home" places={mapPlaces(places)} showRoute />
 
-        <h2 className="sectionHead">Latest photos</h2>
-        <ul className="grid photos">
-          {photosByIdDesc.slice(0, 9).map((p) => <PhotoCard key={p.id} photo={p} />)}
-        </ul>
-        <p className="byline" style={{ marginTop: '1.25rem' }}>
-          <Link href="/photos">All {manifest.counts.photosActive} photos</Link>
-          {' · '}
-          <Link href="/articles">All {manifest.counts.articles} articles</Link>
-        </p>
-      </Inner>
+      <div id="homeStats">
+        <div className="inner">
+          <ul>
+            {STATS.map(([label, get]) => (
+              <li key={label}>{label} <span>{get()}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="main">
+        <Inner className="cols">
+          <div className="leftCol">
+            <div className="recentPost">
+              <h2><Link href={`/articles/${featured.id}`}>{featured.title}</Link></h2>
+              <div className="subTitle">{featured.abstract}</div>
+              {cover ? (
+                <Link href={`/articles/${featured.id}`}>
+                  <Photo photo={cover} priority sizes="(max-width: 900px) 100vw, 650px" />
+                </Link>
+              ) : null}
+              <div
+                className="postBody"
+                dangerouslySetInnerHTML={{ __html: firstBlock }}
+              />
+              <p>
+                <Link href={`/articles/${featured.id}`}>Read the whole thing &raquo;</Link>
+              </p>
+            </div>
+
+            <div className="photos">
+              <h3>Latest photos</h3>
+              <ul>
+                {photosByIdDesc.slice(0, 18).map((p) => (
+                  <li key={p.id}>
+                    <Link href={`/photos/${p.id}`}>
+                      <Photo photo={p} sizes="100px" width={100} height={100} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <p style={{ marginTop: 10 }}>
+                <Link href="/photos">All {manifest.counts.photosActive} photos &raquo;</Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="rightCol">
+            <h3 style={{ fontFamily: 'var(--museo500)', fontSize: 18, marginBottom: 10 }}>
+              Recent stops
+            </h3>
+            {articlesNewestFirst.slice(0, 6).map((a) => (
+              <div className="articleItem" key={a.id}>
+                <Link href={`/articles/${a.id}`}><h3>{a.title}</h3></Link>
+                <span>{[formatDate(a.visited), cityState(a)].filter(Boolean).join(' · ')}</span>
+              </div>
+            ))}
+            <p style={{ marginTop: 10 }}>
+              <Link href="/articles">All {manifest.counts.articles} articles &raquo;</Link>
+            </p>
+          </div>
+        </Inner>
+      </div>
     </>
   );
 }

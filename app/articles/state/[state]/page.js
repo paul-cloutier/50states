@@ -7,19 +7,19 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  return { title: `Articles from ${(await params).state.toUpperCase()}` };
+  return { title: `Articles in ${(await params).state.toUpperCase()}` };
 }
 
 export default async function ByState({ params }) {
   const state = (await params).state.toUpperCase();
   if (!statesWithArticles.includes(state)) notFound();
-  const list = articlesForState(state);
   return (
     <ArticleList
-      title={state}
-      blurb={`${list.length} ${list.length === 1 ? 'story' : 'stories'} from ${state}.`}
-      list={list}
+      descriptor={`in ${state}`}
+      list={articlesForState(state)}
       active={{ kind: 'state', value: state }}
+      sorterHref="/articles"
+      sorterLabel="view them all"
     />
   );
 }

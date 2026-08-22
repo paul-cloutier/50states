@@ -14,13 +14,13 @@ export async function generateMetadata({ params }) {
 export default async function ByMonth({ params }) {
   const m = Number((await params).month);
   if (!(m >= 1 && m <= 12)) notFound();
-  const list = articlesForMonth(m);
   return (
     <ArticleList
-      title={MONTHS[m - 1]}
-      blurb={`Stops made in ${MONTHS[m - 1]}, any year of the trip.`}
-      list={list}
+      descriptor={`from ${MONTHS[m - 1]}`}
+      list={articlesForMonth(m)}
       active={{ kind: 'month', value: m }}
+      sorterHref="/articles"
+      sorterLabel="view them all"
     />
   );
 }

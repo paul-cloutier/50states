@@ -61,7 +61,7 @@ only get harder. Don't remove it.
 2. ~~Export and normalize content~~ — done, see below
 3. ~~Mirror photos to local disk~~ — done. Staying on S3; see below.
 4. ~~Static site to parity, no map~~ — done, 1,284 pages prerendered
-5. Port the map
+5. ~~Port the map~~ — done, Google Maps over HTTPS with prebuilt GeoJSON
 6. Cut over with redirects
 
 ## Running the export
@@ -188,15 +188,53 @@ them.
 
 ### Design notes
 
-The stylesheet is a port, not a copy. Original tokens kept: Georgia body, Museo
-uppercase display, `#3c92ba` accent (the same blue the route polyline uses), `#333`
-ground with white content panels. What changed is the layout — the original was
-pinned to `width: 995px` with a `width=1024` viewport tag, so phones got a
-zoomed-out desktop page. Now it is fluid, with no horizontal scroll at 375px.
+The stylesheet is a faithful port. The original's structure, colour and type are
+reproduced; the fixed widths become max-widths and the float columns collapse below
+900px, because the original shipped `viewport width=1024` and was unusable on a
+phone. At desktop the 995px grid is pixel-faithful — no gutter until the viewport is
+narrower than the grid.
+
+Values that are easy to "improve" by mistake, and are deliberately as the original
+had them:
+
+| | |
+| --- | --- |
+| `.main` background | `#eee`, not white |
+| `#homeStats` | `#ccc` bar with white *italic* figures, not a dark band |
+| Home map | 500px. Detail maps are **150px** |
+| Article body | 660px right column, captions in a 250px left column |
+| Photos | 5px white border, `#7bc5e8` on hover |
+| Index heading | `Articles <span>by date visited</span>` — the grey part is a descriptor, not a count |
+| Index filters | three `<select>`s in a right-hand "Slice and Dice It!" panel |
+| Overlay title | its own link, so it reads blue against white byline and abstract |
+| `.leftCol`/`.rightCol` | 605 / 369 — separate from the article body's 660 / 250 |
 
 `next/image` caps `sizes` rather than upscaling: every original is 1024px wide or
 smaller, and 357 are 612×612 Instagram exports. Rendering at true size or below
 reads as deliberate on a 2011 archive; upscaled reads as broken.
+
+### The map
+
+Still Google Maps, ported from `homemap.js` and `article.js`. `app/TripMap.js` keeps
+the InfoBox library, the marker PNGs and the blue/grey "has a story" distinction.
+
+What changed, and why:
+
+- **Loads over HTTPS from `maps.googleapis.com`.** The original used
+  `http://maps.google.com/...`, which is active mixed content and hard-blocked on
+  any HTTPS host. This is the one change that is not optional.
+- `sensor` is gone — removed from the API years ago.
+- The route comes from the prebuilt `route.geojson` (100 KB gzipped) instead of
+  downloading 788 KB of KML and parsing it with `DOMParser` on every page load.
+
+Requires `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. Copy `.env.example` to `.env.local` for
+local work, and set the same variable in the Vercel project settings. It is
+`NEXT_PUBLIC_` because the map runs in the browser — the value is public by design,
+so **restrict the key by HTTP referrer** to your domains.
+
+One deliberate difference: the original opened an InfoBox on a random marker and
+zoomed to it. This fits the whole route instead, which shows the trip rather than one
+arbitrary stop.
 
 ## Gotchas carried over
 

@@ -4,92 +4,111 @@ import { photoSrc, formatDate, cityState, author } from '@/lib/content';
 
 /**
  * All originals are 1024px wide or smaller (357 are 612x612 Instagram exports), so
- * `sizes` is capped rather than letting next/image upscale into softness. On a 2011
- * archive, rendering at true size reads as deliberate; stretched reads as broken.
+ * sizes is capped rather than letting next/image upscale into softness.
  */
-export function Photo({ photo, sizes, priority = false, className }) {
+export function Photo({ photo, sizes, priority = false, width, height }) {
   if (!photo) return null;
   return (
     <Image
       src={photoSrc(photo)}
       alt={photo.title || photo.caption || 'Photo from the trip'}
-      width={photo.width || 1024}
-      height={photo.height || 683}
-      sizes={sizes || '(max-width: 700px) 100vw, 700px'}
+      width={width || photo.width || 1024}
+      height={height || photo.height || 683}
+      sizes={sizes || '(max-width: 900px) 100vw, 900px'}
       priority={priority}
-      className={className}
     />
   );
 }
 
-export function PhotoCard({ photo }) {
+export function Inner({ children, className }) {
+  return <div className={className ? `inner ${className}` : 'inner'}>{children}</div>;
+}
+
+/** The original photo grid card: white panel, grey 1px border, square thumb. */
+export function PhotoItem({ photo }) {
   return (
-    <li className="card">
+    <div className="photoItem">
       <Link href={`/photos/${photo.id}`}>
-        <span className="thumb">
-          <Photo photo={photo} sizes="(max-width: 700px) 45vw, 220px" />
-        </span>
+        <Photo photo={photo} sizes="(max-width: 900px) 45vw, 200px" width={200} height={200} />
         <h3>{photo.title || 'Untitled'}</h3>
-        {photo.placeName ? <p className="meta">{cityState(photo)}</p> : null}
       </Link>
-    </li>
-  );
-}
-
-export function ArticleCard({ article, cover }) {
-  const who = author(article.authorId);
-  return (
-    <li className="card">
-      <Link href={`/articles/${article.id}`}>
-        {cover ? (
-          <span className="thumb">
-            <Photo photo={cover} sizes="(max-width: 700px) 100vw, 340px" />
-          </span>
-        ) : null}
-        <h3>{article.title}</h3>
-        <p>{article.abstract}</p>
-        <p className="meta">
-          {[cityState(article), formatDate(article.visited), who?.firstName]
-            .filter(Boolean)
-            .join(' · ')}
-        </p>
-      </Link>
-    </li>
-  );
-}
-
-export function Pager({ prev, next, base, labelOf }) {
-  if (!prev && !next) return null;
-  return (
-    <nav className="pager" aria-label="Trip navigation">
-      {prev ? (
-        <Link className="prev" href={`${base}/${prev.id}`} rel="prev">
-          &larr; <span>{labelOf(prev)}</span>
-        </Link>
-      ) : <span />}
-      {next ? (
-        <Link className="next" href={`${base}/${next.id}`} rel="next">
-          <span>{labelOf(next)}</span> &rarr;
-        </Link>
-      ) : null}
-    </nav>
-  );
-}
-
-/**
- * Placeholder for the Google map, which is phase 5. Deliberately a labelled slot
- * rather than nothing, so layout problems show up now instead of after the map
- * lands on top of them.
- */
-export function MapSlot({ children }) {
-  return (
-    <div className="mapSlot" role="img" aria-label="Trip map, not yet implemented">
-      {children || 'Map — coming in phase 5'}
+      <div>{cityState(photo)}</div>
     </div>
   );
 }
 
-/** Standard content column. Pages opt into it so full-bleed bands stay possible. */
-export function Inner({ children }) {
-  return <div className="inner">{children}</div>;
+/** The original article index row: 120px thumb floated left, dashed rule below. */
+export function ArticleItem({ article, cover }) {
+  const who = author(article.authorId);
+  return (
+    <div className="articleItem">
+      <Link href={`/articles/${article.id}`}>
+        {cover ? <Photo photo={cover} sizes="120px" width={120} height={120} /> : null}
+        <h3>{article.title}</h3>
+      </Link>
+      <span>
+        {[who?.name && `By ${who.name}`, formatDate(article.visited), cityState(article)]
+          .filter(Boolean).join(' · ')}
+      </span>
+      <p>{article.abstract}</p>
+    </div>
+  );
+}
+
+/** The original hero preview: full-bleed photo with the caption overlaid at bottom. */
+/**
+ * The original markup: the image is one link, and the overlaid title is a separate
+ * link of its own - which is why the title reads blue against the white byline and
+ * abstract. Order inside the overlay is title, byline, abstract.
+ */
+export function ArticlePreview({ article, cover, large = false, priority = false }) {
+  const who = author(article.authorId);
+  if (!cover) return <ArticleItem article={article} cover={cover} />;
+  return (
+    <div className={large ? 'articlePreview large' : 'articlePreview'}>
+      <Link href={`/articles/${article.id}`} aria-label={article.title}>
+        <Photo
+          photo={cover}
+          priority={priority}
+          sizes={large ? '(max-width: 1000px) 100vw, 995px' : '(max-width: 900px) 100vw, 605px'}
+        />
+      </Link>
+      <div className="articleInfo">
+        <h3><Link href={`/articles/${article.id}`}>{article.title}</Link></h3>
+        <span>
+          {[who?.name && `By ${who.name}`, formatDate(article.visited), cityState(article)]
+            .filter(Boolean).join(' · ')}
+        </span>
+        <p>{article.abstract}</p>
+      </div>
+    </div>
+  );
+}
+
+/** The original nextPrev block: thumb + title, previous left, next right. */
+export function NextPrev({ prev, next, base, photoOf }) {
+  if (!prev && !next) return null;
+  const side = (item, cls) => {
+    if (!item) return <div className={cls} />;
+    const thumb = photoOf ? photoOf(item) : null;
+    return (
+      <div className={cls}>
+        <Link href={`${base}/${item.id}`}>
+          {thumb ? (
+            <span className="thumbFloat">
+              <Photo photo={thumb} sizes="60px" width={60} height={60} />
+            </span>
+          ) : null}
+          <h4>{item.title || 'Untitled'}</h4>
+          <div className="byLine">{cls === 'left' ? '← Previous' : 'Next →'}</div>
+        </Link>
+      </div>
+    );
+  };
+  return (
+    <div className="nextPrev">
+      {side(prev, 'left')}
+      {side(next, 'right')}
+    </div>
+  );
 }
