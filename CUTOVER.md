@@ -9,8 +9,12 @@ The map is the only part of the site that needs configuration.
 
 - In Vercel → Settings → Environment Variables, add
   `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` for **all environments**.
-- **Redeploy afterwards.** `NEXT_PUBLIC_*` values are inlined at build time, so
-  adding the variable does not fix an already-built deployment.
+- **Redeploy afterwards, with the build cache OFF.** `NEXT_PUBLIC_*` values are
+  inlined at build time, so adding the variable does not fix an already-built
+  deployment — and with "Use existing Build Cache" enabled, Next can reuse
+  prerendered output and the new value never reaches the static pages. An empty
+  commit (`git commit --allow-empty`) forces a clean build if you would rather not
+  rely on the checkbox.
 
 Use a **freshly generated** key, not the 2011 one — that key is readable in
 `50states_original`'s public git history. Restrict the new key to the *Maps
@@ -42,23 +46,27 @@ check the console message to tell them apart.
 
 ## 3. Add the domain
 
-- Vercel → Settings → Domains → add `50statesorless.com` and `www.50statesorless.com`.
-- Vercel will offer to redirect one to the other. Pick the apex as canonical to
-  match the old site.
-- At the registrar (the old site was on GoDaddy), point DNS at Vercel — an `A`
-  record for the apex and a `CNAME` for `www`, per whatever Vercel shows.
-- Lower the TTL a day beforehand if you want a fast rollback.
+**Done.** `www.50statesorless.com` is canonical; the apex 308-redirects to it.
+
+- DNS is live on GoDaddy pointing at Vercel: apex `A` → `216.150.1.1`, `www`
+  `CNAME` → `…vercel-dns-016.com`.
+- Canonical host is **`www`**, which is the opposite of the old site (it served the
+  bare domain). That is a deliberate choice, and the only thing it constrains is
+  `SITE_URL` below — which must carry the `www` or every canonical tag and sitemap
+  entry points at a URL that redirects.
 
 ## 4. Set `SITE_URL`
 
 Sitemap and OpenGraph URLs come from `VERCEL_PROJECT_PRODUCTION_URL`, which is the
-`*.vercel.app` hostname. Once the real domain is live, set:
+`*.vercel.app` hostname. Set it explicitly to the canonical host — **with the
+`www`**, to match the domain decision above:
 
 ```
-SITE_URL=https://50statesorless.com
+SITE_URL=https://www.50statesorless.com
 ```
 
-and redeploy, so `sitemap.xml` and share cards use the real domain.
+Getting this wrong is subtle rather than loud: the site works fine, but every
+`rel=canonical` and every `<loc>` in the sitemap points at a URL that 308s.
 
 ## 5. Verify after DNS propagates
 
@@ -67,13 +75,13 @@ and redeploy, so `sitemap.xml` and share cards use the real domain.
 for u in /photos/tags/Roadside "/photos/tags/National%20Parks" /users/view/1 \
          /places/view/6 /pages/about "/articles/index/page:2" /articles/6 /photos/44; do
   printf "%-34s %s\n" "$u" \
-    "$(curl -s -o /dev/null -L -w '%{http_code} hops=%{num_redirects}' "https://50statesorless.com$u")"
+    "$(curl -s -o /dev/null -L -w '%{http_code} hops=%{num_redirects}' "https://www.50statesorless.com$u")"
 done
 ```
 
-Also check: the homepage map draws, `/sitemap.xml` returns 1,282 URLs on the real
-domain, `/robots.txt` points at the right sitemap, and a share preview on an article
-shows its lead photo.
+Also check: the homepage map draws, `/sitemap.xml` returns 1,282 URLs on the `www`
+host, `/robots.txt` points at the right sitemap, canonical tags carry the `www`, and
+a share preview on an article shows its lead photo.
 
 ## 6. Retire the old app
 
