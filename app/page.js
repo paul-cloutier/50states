@@ -10,24 +10,37 @@ import { Photo, Inner } from './components';
 export const metadata = { title: { absolute: '50 States Or Less: Welcome!' } };
 
 /**
- * Homepage figures.
+ * Homepage figures — the original five, in the original order.
  *
- * "Miles Traveled" is the number Paul and Alana recorded themselves, restored from
- * the original homeStats.ctp. It is deliberately NOT derived from the route GeoJSON:
- * that measures 16,046 miles, but the GPS log's last leg is day 213 (1 Aug 2011)
- * while the trip ran to 22 Jun 2012, so it is missing the drive home. The recorded
- * figure is the more truthful one; the computed figure only describes the log.
+ * These are the numbers Paul and Alana kept by hand in homeStats.ctp. Four of them
+ * are unverifiable from any data we hold, so they are restored as recorded:
  *
- * The rest come from the content, so they cannot drift from what the site shows.
- * routeStats.miles is still available if a derived figure is ever wanted.
+ *   Miles Traveled       19,651  (the route GeoJSON measures only 16,046, because
+ *                                 its last leg is day 213 / 1 Aug 2011 while the
+ *                                 trip ran to 22 Jun 2012 — it is missing the drive
+ *                                 home. The recorded figure describes the trip; the
+ *                                 computed one only describes the log.)
+ *   Days On The Road        240  (a hand-updated snapshot that stopped being
+ *                                 refreshed in late Aug 2011. The full span from
+ *                                 first to last visit is 538 days.)
+ *   Gallons Of Gas Used   1,720  (the original wrote this as 188 + 1532)
+ *   Cars Passed               8  (a joke, and worth keeping)
+ *
+ * States Visited is the exception: it is derivable, the original's 28 was an
+ * estimate, and the cleaned data supports 24 — so that one stays computed.
  */
-const RECORDED_MILES = 19651;
+const RECORDED = {
+  miles: 19651,
+  days: 240,
+  gallons: 188 + 1532,
+  carsPassed: 8,
+};
 
 const STATS = [
-  ['Miles Traveled', () => RECORDED_MILES.toLocaleString()],
-  ['Days On The Road', () => routeStats.days.last],
-  ['Places', () => manifest.counts.places],
-  ['Photos', () => manifest.counts.photosActive],
+  ['Miles Traveled', () => RECORDED.miles.toLocaleString()],
+  ['Days On The Road', () => RECORDED.days],
+  ['Gallons Of Gas Used', () => RECORDED.gallons.toLocaleString()],
+  ['Cars Passed', () => RECORDED.carsPassed],
   ['States Visited', () => manifest.trip.statesVisited],
 ];
 
