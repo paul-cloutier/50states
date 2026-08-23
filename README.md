@@ -69,7 +69,7 @@ only get harder. Don't remove it.
 Needs MySQL running (MAMP is fine) and Node 20+. No npm dependencies.
 
 ```bash
-npm run export          # content + route -> data/export/
+npm run export          # content + route + updates -> data/export/
 npm run verify          # diff the export against the still-running old site
 ```
 
@@ -151,6 +151,7 @@ we ever want off S3. It is not part of the current plan.
 | `authors.json` | 2 authors — no credentials |
 | `route.geojson` | 141 named driving legs with day numbers and descriptions |
 | `manifest.json` | counts, trip span, frozen historical view totals |
+| `updates.json` | 113 entries for the homepage Updates sidebar |
 
 ## Running the site
 
@@ -273,6 +274,11 @@ arbitrary stop.
   the 28 hardcoded on the old homepage. `normalizeState()` resolves these and
   reports anything it can't, rather than passing it through.
 - **Museo font license is unverified.** Check it before shipping `reference/type/`.
+- **`reference/` is not just for porting from — it holds real content.** The homepage
+  Updates sidebar has no database row anywhere. The old site originally fetched the
+  tweets live, but that was commented out before the trip ended and replaced by a
+  hand-pasted snapshot in `views/elements/tweets.ctp`. `scripts/export-updates.mjs`
+  extracts all 113 entries from that template, so **do not delete `reference/`.**
 
 ## Route data
 

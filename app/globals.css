@@ -430,6 +430,44 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .photos li img { width: 100px; height: 100px; object-fit: cover; border: var(--white) solid 2px; display: block; }
 .photos li a:hover img { border-color: var(--accent-hover); }
 
+/* ------------------------------------------------------- updates sidebar
+ * Straight from the original: a fixed-height scrolling panel of alternating
+ * speech bubbles, avatar floated to the outside of each one.
+ */
+
+.tweets { height: 500px; width: 100%; overflow-y: auto; overflow-x: hidden; }
+.tweets h3 {
+  font-family: var(--museo500);
+  font-size: 18px;
+  color: var(--ink);
+  font-weight: normal;
+  margin-bottom: 8px;
+}
+.tweets li { margin-bottom: 10px; clear: both; }
+.tweets li::after { content: ''; display: block; clear: both; }
+.tweets li div {
+  background: var(--white);
+  border: var(--rule) solid 1px;
+  padding: 10px;
+  font-size: 12px;
+  font-family: var(--ui);
+  line-height: 17px;
+  border-radius: 5px;
+}
+.tweets li img { width: 48px; height: 48px; border: var(--white) solid 3px; }
+.tweets li.paul img { float: left; margin-right: 10px; }
+.tweets li.alana img { float: right; margin-left: 10px; }
+.tweets li.paul div { margin-left: 58px; }
+.tweets li.alana div { margin-right: 58px; }
+.tweetsNote {
+  clear: both;
+  padding-top: 10px;
+  font-family: var(--ui);
+  font-size: 11px;
+  color: var(--grey);
+  line-height: 15px;
+}
+
 /* ---------------------------------------------------------------- next/prev */
 
 .nextPrev { margin: 50px 0 0; width: var(--col-wide); float: right; }

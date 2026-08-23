@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import {
   manifest, routeStats, places, articleById, articlePhotos, photosByIdDesc,
-  mapPlaces, renderBody, formatDate, cityState, author, articlesNewestFirst,
+  mapPlaces, renderBody, author, articlesNewestFirst,
 } from '@/lib/content';
 import TripMap from './TripMap';
+import Updates from './Updates';
 import { Photo, Inner } from './components';
 
 export const metadata = { title: { absolute: '50 States Or Less: Welcome!' } };
@@ -75,18 +76,7 @@ export default function Home() {
           </div>
 
           <div className="rightCol">
-            <h3 style={{ fontFamily: 'var(--museo500)', fontSize: 18, marginBottom: 10 }}>
-              Recent stops
-            </h3>
-            {articlesNewestFirst.slice(0, 6).map((a) => (
-              <div className="articleItem" key={a.id}>
-                <Link href={`/articles/${a.id}`}><h3>{a.title}</h3></Link>
-                <span>{[formatDate(a.visited), cityState(a)].filter(Boolean).join(' · ')}</span>
-              </div>
-            ))}
-            <p style={{ marginTop: 10 }}>
-              <Link href="/articles">All {manifest.counts.articles} articles &raquo;</Link>
-            </p>
+            <Updates />
           </div>
         </Inner>
       </div>

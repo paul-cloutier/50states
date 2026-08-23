@@ -5,9 +5,10 @@
   "type": "module",
   "description": "Static archive of a 2011-2012 road trip around the US",
   "scripts": {
-    "export": "npm run export:content && npm run export:route",
+    "export": "npm run export:content && npm run export:route && npm run export:updates",
     "export:content": "node scripts/export-content.mjs",
     "export:route": "node scripts/export-route.mjs",
+    "export:updates": "node scripts/export-updates.mjs",
     "verify": "node scripts/verify-against-live.mjs",
     "dev": "next dev",
     "build": "next build",
