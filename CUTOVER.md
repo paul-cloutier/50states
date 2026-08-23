@@ -123,6 +123,8 @@ not in git.
 - **The route ends before the trip does.** Last leg is day 213 = 1 Aug 2011; the trip
   ran to 22 Jun 2012. 26 of 283 places fall after it — the drive home down the Oregon
   coast. The old site drew the same file, so this is pre-existing.
+- **Homepage mileage is the recorded 19,651, not the GPS-derived 16,046** — the log
+  stops in Aug 2011, so the derived figure understates the trip.
 - **Photos are 2011 resolution.** 357 are 612×612 Instagram exports and can never
   improve; ~500 are 1024px. Display width is capped rather than upscaled.
 - **The homepage article is pinned, not random.** The old site used

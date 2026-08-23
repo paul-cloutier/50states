@@ -9,8 +9,22 @@ import { Photo, Inner } from './components';
 
 export const metadata = { title: { absolute: '50 States Or Less: Welcome!' } };
 
+/**
+ * Homepage figures.
+ *
+ * "Miles Traveled" is the number Paul and Alana recorded themselves, restored from
+ * the original homeStats.ctp. It is deliberately NOT derived from the route GeoJSON:
+ * that measures 16,046 miles, but the GPS log's last leg is day 213 (1 Aug 2011)
+ * while the trip ran to 22 Jun 2012, so it is missing the drive home. The recorded
+ * figure is the more truthful one; the computed figure only describes the log.
+ *
+ * The rest come from the content, so they cannot drift from what the site shows.
+ * routeStats.miles is still available if a derived figure is ever wanted.
+ */
+const RECORDED_MILES = 19651;
+
 const STATS = [
-  ['Miles Driven', () => routeStats.miles.toLocaleString()],
+  ['Miles Traveled', () => RECORDED_MILES.toLocaleString()],
   ['Days On The Road', () => routeStats.days.last],
   ['Places', () => manifest.counts.places],
   ['Photos', () => manifest.counts.photosActive],

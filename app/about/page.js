@@ -11,7 +11,7 @@ export default function About() {
           <h1>About</h1>
           <div className="subTitle">
             One 1977 GMC motorhome, {manifest.trip.statesVisited} states,{' '}
-            {routeStats.miles.toLocaleString()} recorded miles.
+            19,651 miles.
           </div>
           <div className="postBody">
             <div className="prose">
@@ -25,9 +25,10 @@ export default function About() {
               <p>
                 This site is what they posted along the way: {manifest.counts.articles}{' '}
                 stories, {manifest.counts.photosActive} photos and{' '}
-                {manifest.counts.places} places. The GPS log covers{' '}
-                {routeStats.miles.toLocaleString()} miles over {routeStats.days.distinct}{' '}
-                driving days.
+                {manifest.counts.places} places. The GPS log that draws the map covers{' '}
+                {routeStats.miles.toLocaleString()} of those miles across{' '}
+                {routeStats.days.distinct} driving days — it stops in August 2011, a few
+                months before the trip did.
               </p>
               <p>
                 Nothing here has been added since June 2012. It is kept online as a
