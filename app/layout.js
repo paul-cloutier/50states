@@ -1,12 +1,26 @@
 import Link from 'next/link';
 import { authors } from '@/lib/content';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
+const DESCRIPTION =
+  'Paul and Alana Cloutier got rid of all their stuff and spent 2011 and 2012 ' +
+  'driving the US in a 1977 GMC motorhome they restored from the ground up.';
+
 export const metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: '50 States Or Less', template: '50 States Or Less: %s' },
-  description:
-    'Paul and Alana Cloutier got rid of all their stuff and spent 2011 and 2012 ' +
-    'driving the US in a 1977 GMC motorhome they restored from the ground up.',
+  description: DESCRIPTION,
+  openGraph: {
+    siteName: '50 States Or Less',
+    type: 'website',
+    title: '50 States Or Less',
+    description: DESCRIPTION,
+    url: '/',
+  },
+  twitter: { card: 'summary_large_image' },
+  // An archive: tell crawlers it is stable, and don't imply freshness.
+  robots: { index: true, follow: true },
 };
 
 export const viewport = { width: 'device-width', initialScale: 1 };

@@ -15,7 +15,20 @@ export async function generateMetadata({ params }) {
   const a = articleById.get(Number((await params).id));
   if (!a) return {};
   const where = cityState(a);
-  return { title: where ? `${a.title} - ${where}` : a.title, description: a.abstract };
+  const cover = articlePhotos(a)[0];
+  return {
+    title: where ? `${a.title} - ${where}` : a.title,
+    description: a.abstract,
+    alternates: { canonical: `/articles/${a.id}` },
+    openGraph: {
+      type: 'article',
+      title: a.title,
+      description: a.abstract,
+      url: `/articles/${a.id}`,
+      publishedTime: a.visited || undefined,
+      images: cover ? [{ url: cover.full, width: cover.width, height: cover.height }] : undefined,
+    },
+  };
 }
 
 export default async function Article({ params }) {

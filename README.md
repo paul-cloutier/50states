@@ -62,7 +62,7 @@ only get harder. Don't remove it.
 3. ~~Mirror photos to local disk~~ — done. Staying on S3; see below.
 4. ~~Static site to parity, no map~~ — done, 1,284 pages prerendered
 5. ~~Port the map~~ — done, Google Maps over HTTPS with prebuilt GeoJSON
-6. Cut over with redirects
+6. Cut over with redirects — code done, DNS pending. See [CUTOVER.md](CUTOVER.md).
 
 ## Running the export
 
@@ -165,7 +165,17 @@ at build time. Both are committed, so a clean checkout builds without MySQL.
 
 ### Routes
 
-Every old URL is preserved. `/places/view/:id` 301s to `/places/:id` (the old site
+Every old URL is preserved, verified by replaying 23 legacy URLs against the new
+site — all end in 200 within one hop. Full runbook in [CUTOVER.md](CUTOVER.md).
+
+**Tag URLs are handled in the page, not by a redirect.** The old URLs used the raw
+tag name (`/photos/tags/Roadside`, `/photos/tags/National%20Parks`) and all 57 differ
+from the new slugs. A config redirect looks obvious and is a trap: Next matches
+redirect sources **case-insensitively**, so `/photos/tags/Roadside` →
+`/photos/tags/roadside` also matches its own destination and loops forever (curl
+reported 50 hops). Both forms are prerendered instead, with `rel=canonical` pointing
+at the slug.
+ `/places/view/:id` 301s to `/places/:id` (the old site
 had no `/places/:id` route at all — it 500'd). Dead CMS routes 301 to home.
 
 | Route | Pages |

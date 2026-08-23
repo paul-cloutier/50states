@@ -18,6 +18,14 @@ export async function generateMetadata({ params }) {
   return {
     title: where ? `${p.title || 'Photo'} - ${where}` : p.title || 'Photo',
     description: p.caption || undefined,
+    alternates: { canonical: `/photos/${p.id}` },
+    openGraph: {
+      type: 'article',
+      title: p.title || 'Photo',
+      description: p.caption || undefined,
+      url: `/photos/${p.id}`,
+      images: [{ url: p.full, width: p.width, height: p.height }],
+    },
   };
 }
 
