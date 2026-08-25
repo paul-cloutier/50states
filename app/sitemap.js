@@ -21,7 +21,6 @@ export default function sitemap() {
     url('/', undefined, 1),
     url('/about', undefined, 0.5),
     url('/articles', undefined, 0.9),
-    url('/articles/date', undefined, 0.4),
     url('/photos', undefined, 0.9),
     url('/photos/date', undefined, 0.4),
     ...articles.map((a) => url(`/articles/${a.id}`, a.visited, 0.8)),

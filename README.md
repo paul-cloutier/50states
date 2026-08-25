@@ -169,6 +169,12 @@ at build time. Both are committed, so a clean checkout builds without MySQL.
 Every old URL is preserved, verified by replaying 23 legacy URLs against the new
 site — all end in 200 within one hop. Full runbook in [CUTOVER.md](CUTOVER.md).
 
+**Articles have one ordering: newest posted first.** The original offered an "or view
+them in the order we put them on the site" toggle between visited order and posted
+order, which needed a query per ordering. `/articles/date` now 301s to `/articles`.
+`visited` still drives the trip chronology — prev/next links and the month filter,
+where "from March" means stops made in March.
+
 **Tag URLs are handled in the page, not by a redirect.** The old URLs used the raw
 tag name (`/photos/tags/Roadside`, `/photos/tags/National%20Parks`) and all 57 differ
 from the new slugs. A config redirect looks obvious and is a trap: Next matches
@@ -182,7 +188,7 @@ had no `/places/:id` route at all — it 500'd). Dead CMS routes 301 to home.
 | Route | Pages |
 | --- | --- |
 | `/` | homepage — map slot, derived stats, featured article, latest photos |
-| `/articles`, `/articles/date` | index in trip order / date-posted order |
+| `/articles` | single index, newest posted first (`/articles/date` 301s here) |
 | `/articles/[id]` | 53 |
 | `/articles/state/[state]` | 10 (only states that have articles) |
 | `/articles/month/[month]` | 12 |

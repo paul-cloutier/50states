@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { articlePhotos, statesWithArticles, authors } from '@/lib/content';
 import { ArticlePreview, Inner } from '@/app/components';
 import Filter from './Filter';
@@ -7,19 +6,21 @@ const MONTHS = ['January','February','March','April','May','June',
                 'July','August','September','October','November','December'];
 
 /**
- * Matches the original: a full-width heading band with the descriptor in grey and a
- * one-line "or ..." sorter beneath, then a 605px left column of previews with the
- * Slice and Dice panel on the right.
+ * The article index: a full-width heading band, then a 605px left column of photo
+ * previews with the Slice and Dice panel on the right.
+ *
+ * The original also carried a one-line "or view them in the order we put them on the
+ * site" toggle beneath the heading, switching between visited order and posted order.
+ * That needed a query per ordering, and there is now a single canonical order -
+ * newest posted first - so the toggle is gone. `visited` still drives the trip
+ * chronology used by prev/next and by the month filter.
  */
-export function ArticleList({ descriptor, list, active, sorterHref, sorterLabel }) {
+export function ArticleList({ descriptor, list, active }) {
   return (
     <div className="main">
       <Inner>
         <div className="articleIndex">
-          <h1>Articles <span>{descriptor}</span></h1>
-          <div id="sorter">
-            or <Link href={sorterHref}>{sorterLabel}</Link>
-          </div>
+          <h1>Articles{descriptor ? <> <span>{descriptor}</span></> : null}</h1>
         </div>
       </Inner>
       <Inner className="cols">

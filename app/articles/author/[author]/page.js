@@ -22,8 +22,6 @@ export default async function ByAuthor({ params }) {
       descriptor={`by ${a.firstName}`}
       list={articlesForAuthor(slug)}
       active={{ kind: 'author', value: slug }}
-      sorterHref="/articles"
-      sorterLabel="view them all"
     />
   );
 }

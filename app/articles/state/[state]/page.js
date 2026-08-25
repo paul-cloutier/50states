@@ -18,8 +18,6 @@ export default async function ByState({ params }) {
       descriptor={`in ${state}`}
       list={articlesForState(state)}
       active={{ kind: 'state', value: state }}
-      sorterHref="/articles"
-      sorterLabel="view them all"
     />
   );
 }

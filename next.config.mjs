@@ -51,6 +51,10 @@ const nextConfig = {
       // The old site had no /places/:id route at all - it returned a blank 500.
       { source: '/places/view/:id', destination: '/places/:id', permanent: true },
 
+      // The index no longer offers a visited-vs-posted ordering toggle, so the
+      // old "by date added" view collapses into the single canonical index.
+      { source: '/articles/date', destination: '/articles', permanent: true },
+
       // Cake's Paginator used named params. These are real indexed URLs; the new
       // indexes aren't paginated, so they collapse to the index itself.
       // Cake wrote them as /articles/index/page:2 - a literal colon in the

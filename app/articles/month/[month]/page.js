@@ -19,8 +19,6 @@ export default async function ByMonth({ params }) {
       descriptor={`from ${MONTHS[m - 1]}`}
       list={articlesForMonth(m)}
       active={{ kind: 'month', value: m }}
-      sorterHref="/articles"
-      sorterLabel="view them all"
     />
   );
 }
