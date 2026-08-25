@@ -121,7 +121,7 @@ export default async function Article({ params }) {
             ) : null}
 
             <NextPrev
-              prev={prev} next={next} base="/articles"
+              prev={prev} next={next} base="/articles" label="Article"
               photoOf={(x) => articlePhotos(x)[0]}
             />
           </div>

@@ -187,6 +187,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* ---------------------------------------------------------------- article */
 
 .article { margin-top: 0; }
+.article::after { content: ''; display: block; clear: both; }
 .article h1 {
   margin: 10px 0 5px;
   font-family: var(--museo500);
@@ -381,12 +382,29 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   text-align: right;
   float: right;
   width: 200px;
+  margin-top: 125px;
   font-family: var(--ui);
   color: var(--ink);
   font-size: 12px;
   margin-bottom: 10px;
 }
 .photo .byLine strong { display: block; font-size: 14px; margin-top: 7px; }
+
+/* Pinned to the top-right of the white .photoInfo panel, as the original was. */
+.photoPrevNext { position: absolute; right: 10px; top: 2px; width: 215px; }
+.photoPrevNext img {
+  width: 100px; height: 100px; object-fit: cover;
+  border: var(--wash) solid 1px; margin-bottom: 2px; display: block;
+}
+.photoPrevNext a {
+  display: block;
+  font-family: var(--ui);
+  font-weight: bold;
+  font-size: 10px;
+}
+.photoPrevNext .photoPrev { float: left; }
+.photoPrevNext .photoNext { float: right; padding-right: 5px; text-align: right; }
+.photoPrevNext::after { content: ''; display: block; clear: both; }
 
 .tags { margin-top: 15px; }
 .tags li { display: inline; }
@@ -470,16 +488,43 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------------------------------------------------------------- next/prev */
 
-.nextPrev { margin: 50px 0 0; width: var(--col-wide); float: right; }
+/*
+ * The original used `float: right; width: 660px` here, which only stayed inside
+ * .main by luck: its article pages were tall enough that the uncleared float
+ * happened to fit. On a shorter page the float escapes its container and paints
+ * over the footer, taking its links with it.
+ *
+ * Positioned with margin-left instead - the same 335px the original used for
+ * .articleComments, which shared this column - so it lands in the 660px body
+ * column without floating and cannot overflow. .article also gets a clearfix so
+ * nothing else can escape it either.
+ */
+.nextPrev {
+  margin: 50px 0 0 335px;
+  width: var(--col-wide);
+  max-width: 100%;
+  clear: both;
+}
 .nextPrev::after { content: ''; display: block; clear: both; }
 .nextPrev h4 { font-family: var(--museo500); color: var(--ink); font-size: 120%; font-weight: normal; }
 .nextPrev .byLine { font-family: var(--ui); color: var(--grey); margin: 3px 0; font-weight: bold; font-size: 80%; }
-.nextPrev .left { float: left; width: 45%; }
-.nextPrev .right { float: right; width: 45%; text-align: right; }
-.nextPrev .thumbFloat img { border: var(--white) solid 3px; margin-top: 3px; width: 60px; height: 60px; object-fit: cover; }
+.nextPrev .subTitle { font-style: italic; color: var(--mid); font-size: 90%; }
+.nextPrev .inactive { color: var(--rule); }
+.nextPrev .left { float: left; width: 47%; }
+.nextPrev .right { float: right; width: 47%; text-align: right; }
+.nextPrev .thumbFloat img,
+.nextPrev .thumbFloatOff img {
+  border: var(--white) solid 3px;
+  margin-top: 3px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
 .nextPrev a:hover .thumbFloat img { border-color: var(--accent-hover); }
-.nextPrev .left .thumbFloat { float: left; margin-right: 10px; }
-.nextPrev .right .thumbFloat { float: right; margin-left: 10px; }
+.nextPrev .left .thumbFloat,
+.nextPrev .left .thumbFloatOff { float: left; margin-right: 10px; }
+.nextPrev .right .thumbFloat,
+.nextPrev .right .thumbFloatOff { float: right; margin-left: 10px; }
 
 /* ---------------------------------------------------------------- place page */
 
@@ -597,10 +642,13 @@ h2.sectionHead {
     border-right: 0;
   }
   .article .caption { margin-bottom: 20px; }
+  .nextPrev { margin-left: 0; }
   .footer .bios li,
   .footer .bios li.left,
   .footer .bios li.right { width: 100%; float: none; margin-bottom: 20px; }
   .photoItem { width: calc(50% - 10px); margin-right: 10px; }
+  .photoPrevNext { position: static; width: 100%; margin-top: 15px; }
+  .photo .byLine { margin-top: 0; }
   .map .mapCanvas { height: 340px; }
 }
 

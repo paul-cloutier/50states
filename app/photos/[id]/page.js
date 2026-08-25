@@ -5,7 +5,7 @@ import {
   formatDate, cityState, author,
 } from '@/lib/content';
 import TripMap from '@/app/TripMap';
-import { Photo, PhotoItem, Inner, NextPrev } from '@/app/components';
+import { Photo, PhotoItem, Inner, PhotoPrevNext } from '@/app/components';
 
 export function generateStaticParams() {
   return livePhotos.map((p) => ({ id: String(p.id) }));
@@ -67,6 +67,7 @@ export default async function PhotoPage({ params }) {
             </div>
 
             <div className="photoInfo">
+              <PhotoPrevNext prev={prev} next={next} />
               <div className="byLine">
                 {who ? <><strong>{who.name}</strong></> : null}
                 {p.visited ? formatDate(p.visited) : null}
@@ -97,7 +98,6 @@ export default async function PhotoPage({ params }) {
               </>
             ) : null}
 
-            <NextPrev prev={prev} next={next} base="/photos" photoOf={(x) => x} />
           </div>
         </Inner>
       </div>

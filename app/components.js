@@ -85,30 +85,98 @@ export function ArticlePreview({ article, cover, large = false, priority = false
   );
 }
 
-/** The original nextPrev block: thumb + title, previous left, next right. */
-export function NextPrev({ prev, next, base, photoOf }) {
+/**
+ * Previous / next, matching the original's structure: a label above the link, then a
+ * 100px thumbnail floated to the outside, the title, the city and state, and the
+ * abstract. When there is no neighbour the original showed a bookend graphic
+ * (first_article.png / last_article.png) with the label greyed out.
+ */
+export function NextPrev({ prev, next, base, photoOf, label = 'Article' }) {
   if (!prev && !next) return null;
+
   const side = (item, cls) => {
-    if (!item) return <div className={cls} />;
+    const isPrev = cls === 'left';
+    const text = isPrev ? `\u00ab Previous ${label}` : `Next ${label} \u00bb`;
+
+    if (!item) {
+      return (
+        <div className={cls}>
+          <div className="inactive">{text}</div>
+          <div className="thumbFloatOff">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={isPrev ? '/img/first_article.png' : '/img/last_article.png'}
+              width={100}
+              height={100}
+              alt=""
+            />
+          </div>
+        </div>
+      );
+    }
+
     const thumb = photoOf ? photoOf(item) : null;
     return (
       <div className={cls}>
+        <div>{text}</div>
         <Link href={`${base}/${item.id}`}>
           {thumb ? (
             <span className="thumbFloat">
-              <Photo photo={thumb} sizes="60px" width={60} height={60} />
+              <Photo photo={thumb} sizes="100px" width={100} height={100} />
             </span>
           ) : null}
           <h4>{item.title || 'Untitled'}</h4>
-          <div className="byLine">{cls === 'left' ? '← Previous' : 'Next →'}</div>
+          {cityState(item) ? <div className="byLine">{cityState(item)}</div> : null}
+          {item.abstract ? <div className="subTitle">{item.abstract}</div> : null}
         </Link>
       </div>
     );
   };
+
   return (
     <div className="nextPrev">
       {side(prev, 'left')}
       {side(next, 'right')}
+    </div>
+  );
+}
+
+/**
+ * Photo prev/next. The original used a different pattern here from the article
+ * pages: not the .nextPrev block, but a 215px pair of 100px thumbnails pinned to
+ * the top-right of the white .photoInfo panel, labelled "Older" and "Newer" rather
+ * than "Previous" and "Next". Bookend graphics stand in at either end of the run.
+ */
+export function PhotoPrevNext({ prev, next }) {
+  if (!prev && !next) return null;
+  return (
+    <div className="photoPrevNext">
+      <div className="photoPrev">
+        {prev ? (
+          <>
+            <Link href={`/photos/${prev.id}`}>
+              <Photo photo={prev} sizes="100px" width={100} height={100} />
+            </Link>
+            <Link href={`/photos/${prev.id}`}>&laquo; Older Photo</Link>
+          </>
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src="/img/oldestPhoto.png" width={100} height={100} alt="Oldest photo" />
+        )}
+      </div>
+      <div className="photoNext">
+        {next ? (
+          <>
+            <Link href={`/photos/${next.id}`}>
+              <Photo photo={next} sizes="100px" width={100} height={100} />
+            </Link>
+            <Link href={`/photos/${next.id}`}>Newer Photo &raquo;</Link>
+          </>
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src="/img/newestPhoto.png" width={100} height={100} alt="Newest photo" />
+        )}
+      </div>
     </div>
   );
 }

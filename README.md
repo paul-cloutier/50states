@@ -169,6 +169,19 @@ at build time. Both are committed, so a clean checkout builds without MySQL.
 Every old URL is preserved, verified by replaying 23 legacy URLs against the new
 site — all end in 200 within one hop. Full runbook in [CUTOVER.md](CUTOVER.md).
 
+**Prev/next uses two different patterns, because the original did.** Article pages
+get the `.nextPrev` block below the body — label, 100px thumbnail floated outward,
+title, city/state, abstract, with `first_article.png` / `last_article.png` bookends at
+either end. Photo pages get `.photoPrevNext` instead: a 215px pair of thumbs pinned to
+the top-right of the white `.photoInfo` panel, labelled "Older"/"Newer".
+
+The original's `.nextPrev` was `float: right; width: 660px` and **nothing cleared it**
+— it only stayed inside `.main` because those article pages happened to be tall
+enough. On a shorter page the float escapes its container and paints over the footer,
+taking its links with it. It is positioned with `margin-left: 335px` here instead (the
+same offset the original used for `.articleComments`, which shared that column), so it
+lands in the 660px body column without floating. `.article` also carries a clearfix.
+
 **Articles have one ordering: newest posted first.** The original offered an "or view
 them in the order we put them on the site" toggle between visited order and posted
 order, which needed a query per ordering. `/articles/date` now 301s to `/articles`.
