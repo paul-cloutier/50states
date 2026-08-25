@@ -5,7 +5,7 @@ import {
   formatDate, cityState, author,
 } from '@/lib/content';
 import TripMap from '@/app/TripMap';
-import { Photo, PhotoItem, Inner, PhotoPrevNext } from '@/app/components';
+import { Photo, Inner, PhotoPrevNext } from '@/app/components';
 
 export function generateStaticParams() {
   return livePhotos.map((p) => ({ id: String(p.id) }));
@@ -90,12 +90,20 @@ export default async function PhotoPage({ params }) {
             </div>
 
             {related.length ? (
-              <>
-                <h2 className="sectionHead">More from {place ? place.name : 'this stop'}</h2>
-                <div className="photoGrid">
-                  {related.map((r) => <PhotoItem key={r.id} photo={r} />)}
-                </div>
-              </>
+              /* The original used a bare thumbnail strip here, not the captioned
+                 cards - the page already tells you where you are. */
+              <div className="photos">
+                <h3>Other Photos Taken Near Here</h3>
+                <ul>
+                  {related.map((r) => (
+                    <li key={r.id}>
+                      <Link href={`/photos/${r.id}`}>
+                        <Photo photo={r} sizes="100px" width={100} height={100} />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : null}
 
           </div>

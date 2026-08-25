@@ -440,7 +440,9 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .photoItem div { margin-top: 5px; font-family: var(--ui); font-size: 12px; color: var(--grey); }
 .photoGrid { display: flex; flex-wrap: wrap; }
 
-/* home photo strip */
+/* The .photos strip: bare 100px thumbnails, used by the homepage "Latest photos"
+   and by "Other Photos Taken Near Here" on a photo page. No captions - the page
+   itself already establishes the place. */
 .photos { clear: both; margin-top: 40px; }
 .photos h3 { font-family: var(--museo500); font-size: 18px; color: var(--ink); font-weight: normal; }
 .photos ul { margin-top: 8px; }
@@ -500,9 +502,8 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
  * nothing else can escape it either.
  */
 .nextPrev {
-  margin: 50px 0 0 335px;
-  width: var(--col-wide);
-  max-width: 100%;
+  margin: 50px 0 0;
+  width: 100%;
   clear: both;
 }
 .nextPrev::after { content: ''; display: block; clear: both; }
@@ -510,8 +511,8 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .nextPrev .byLine { font-family: var(--ui); color: var(--grey); margin: 3px 0; font-weight: bold; font-size: 80%; }
 .nextPrev .subTitle { font-style: italic; color: var(--mid); font-size: 90%; }
 .nextPrev .inactive { color: var(--rule); }
-.nextPrev .left { float: left; width: 47%; }
-.nextPrev .right { float: right; width: 47%; text-align: right; }
+.nextPrev .left { float: left; width: 48%; }
+.nextPrev .right { float: right; width: 48%; text-align: right; }
 .nextPrev .thumbFloat img,
 .nextPrev .thumbFloatOff img {
   border: var(--white) solid 3px;
@@ -642,7 +643,6 @@ h2.sectionHead {
     border-right: 0;
   }
   .article .caption { margin-bottom: 20px; }
-  .nextPrev { margin-left: 0; }
   .footer .bios li,
   .footer .bios li.left,
   .footer .bios li.right { width: 100%; float: none; margin-bottom: 20px; }

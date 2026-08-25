@@ -178,9 +178,15 @@ the top-right of the white `.photoInfo` panel, labelled "Older"/"Newer".
 The original's `.nextPrev` was `float: right; width: 660px` and **nothing cleared it**
 — it only stayed inside `.main` because those article pages happened to be tall
 enough. On a shorter page the float escapes its container and paints over the footer,
-taking its links with it. It is positioned with `margin-left: 335px` here instead (the
-same offset the original used for `.articleComments`, which shared that column), so it
-lands in the 660px body column without floating. `.article` also carries a clearfix.
+taking its links with it. Here it is unfloated and spans the full 995px content width
+instead, so Previous sits flush left and Next flush right, aligned with the lead
+image. `.article` also carries a clearfix so nothing else can escape.
+
+The related-photos strip on a photo page carries **no captions** — bare 100px
+thumbnails under "Other Photos Taken Near Here", which is what the original did. The
+page already establishes the place, so repeating it on every thumbnail is noise. The
+photo index and tag pages keep the captioned `.photoItem` cards, because there the
+context isn't established.
 
 **Articles have one ordering: newest posted first.** The original offered an "or view
 them in the order we put them on the site" toggle between visited order and posted
