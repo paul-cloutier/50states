@@ -31,8 +31,8 @@ export default function About() {
                 months before the trip did.
               </p>
               <p>
-                Nothing here has been added since June 2012. It is kept online as a
-                record, not a running blog.
+                Nothing here has been added since 2011. It is kept online as a record,
+                not a running blog.
               </p>
               {authors.map((a) => (
                 <p key={a.id}><strong>{a.name}</strong> &mdash; {a.bio}</p>

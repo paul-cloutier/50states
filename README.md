@@ -1,9 +1,9 @@
 # 50 States or Less
 
-A static archive of a 2011–2012 road trip around the US in a restored 1977 GMC
+A static archive of a 2011 road trip around the US in a restored 1977 GMC
 motorhome. 53 articles, 859 photos, 283 places, 24 states, 16,000 recorded miles.
 
-The content is closed — nothing new has been published since June 2012 and nothing
+The content is closed — nothing new has been published since 2011 and nothing
 will be. This site exists to keep the record readable.
 
 ## Status
@@ -151,7 +151,7 @@ we ever want off S3. It is not part of the current plan.
 | `authors.json` | 2 authors — no credentials |
 | `route.geojson` | 141 named driving legs with day numbers and descriptions |
 | `manifest.json` | counts, trip span, frozen historical view totals |
-| `updates.json` | 113 entries for the homepage Updates sidebar |
+| `updates.json` | 113 entries for the homepage Updates sidebar (**no dates — none exist in the source**) |
 
 ## Running the site
 
@@ -292,8 +292,8 @@ GeoJSON instead: 13,802 of 31,784 points at ~110 m tolerance, **98 KB gzipped**,
 with day numbers, descriptions and per-leg mileage retained.
 
 **Known gap — the route ends before the trip does.** The last leg is day 213 =
-1 Aug 2011, but the trip ran to 22 June 2012. 26 of 283 places fall after the route
-ends (19 CA, 4 OR, 3 TN — the drive home down the Oregon coast). The route's
+1 Aug 2011, but the trip ran to 12 Sep 2011. 26 of 283 places fall after the route
+ends (19 CA, 4 OR, 3 TN — the last stretch home, plus a September Tennessee run). The route's
 measured length is 16,046 miles against the 19,651 the old homepage claimed, and
 that gap is the missing homeward leg. The old site drew this same file, so this is
 pre-existing, not a regression. Options if we want to close it: leave as-is

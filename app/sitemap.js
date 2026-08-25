@@ -7,7 +7,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
 /**
  * The whole archive, ~1,280 URLs. lastModified is the trip date rather than the
- * build date - the content genuinely has not changed since 2012, and claiming
+ * build date - the content genuinely has not changed since 2011, and claiming
  * otherwise on every deploy is just noise to a crawler.
  */
 export default function sitemap() {

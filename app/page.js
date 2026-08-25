@@ -16,13 +16,13 @@ export const metadata = { title: { absolute: '50 States Or Less: Welcome!' } };
  * are unverifiable from any data we hold, so they are restored as recorded:
  *
  *   Miles Traveled       19,651  (the route GeoJSON measures only 16,046, because
- *                                 its last leg is day 213 / 1 Aug 2011 while the
- *                                 trip ran to 22 Jun 2012 — it is missing the drive
- *                                 home. The recorded figure describes the trip; the
- *                                 computed one only describes the log.)
- *   Days On The Road        240  (a hand-updated snapshot that stopped being
- *                                 refreshed in late Aug 2011. The full span from
- *                                 first to last visit is 538 days.)
+ *                                 its last leg is day 213 / 1 Aug 2011 while the trip
+ *                                 ran to 12 Sep 2011 — it is missing the last stretch
+ *                                 home plus the September Tennessee run. The recorded
+ *                                 figure describes the trip; the computed one only
+ *                                 describes the log.)
+ *   Days On The Road        240  (a hand-updated snapshot. The trip itself ran
+ *                                 1 Jan - 12 Sep 2011, about 255 days.)
  *   Gallons Of Gas Used   1,720  (the original wrote this as 188 + 1532)
  *   Cars Passed               8  (a joke, and worth keeping)
  *

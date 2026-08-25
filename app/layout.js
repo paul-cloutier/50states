@@ -4,8 +4,8 @@ import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
 const DESCRIPTION =
-  'Paul and Alana Cloutier got rid of all their stuff and spent 2011 and 2012 ' +
-  'driving the US in a 1977 GMC motorhome they restored from the ground up.';
+  'Paul and Alana Cloutier got rid of all their stuff and spent 2011 driving the ' +
+  'US in a 1977 GMC motorhome they restored from the ground up.';
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -66,7 +66,7 @@ export default function RootLayout({ children }) {
               ))}
             </ul>
             <p className="archived">
-              An archive of a trip that ended in 2012. Nothing here has changed since.
+              An archive of a trip that ended in 2011. Nothing here has changed since.
             </p>
           </div>
         </div>

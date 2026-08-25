@@ -32,8 +32,8 @@ export default function Updates() {
         </ul>
       </div>
       <p className="tweetsNote">
-        {updates.length} updates, ending June 2012. Kept as they were &mdash; the
-        accounts stopped posting when the trip did.
+        {updates.length} updates from the road, as they stood when the trip ended in
+        2011. The source has no dates.
       </p>
     </>
   );
